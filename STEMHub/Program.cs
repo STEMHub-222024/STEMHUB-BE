@@ -104,6 +104,8 @@ builder.Services.AddScoped<ICrudRepository<NewspaperArticle>, CrudRepository<New
 builder.Services.AddScoped<ICrudRepository<STEM>, CrudRepository<STEM>>();
 builder.Services.AddScoped<ICrudRepository<Topic>, CrudRepository<Topic>>();
 builder.Services.AddScoped<ICrudRepository<Video>, CrudRepository<Video>>();
+builder.Services.AddScoped<ICrudRepository<ApplicationUser>, CrudRepository<ApplicationUser>>();
+builder.Services.AddScoped<ICrudUserRepository<IdentityUser>, CrudUserRepository<IdentityUser>>();
 
 builder.Services.AddScoped<UnitOfWork>();
 

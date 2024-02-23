@@ -17,16 +17,16 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllSTEM()
+        public async Task<IActionResult> GetAllSTEM()
         {
-            var stem = _unitOfWork.STEMRepository.GetAll<STEMDto>();
+            var stem = await _unitOfWork.STEMRepository.GetAllAsync<STEMDto>();
             return Ok(stem);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetSTEM(Guid id)
+        public async Task<IActionResult> GetSTEM(Guid id)
         {
-            var stem = _unitOfWork.STEMRepository.GetById<STEMDto>(id);
+            var stem = await _unitOfWork.STEMRepository.GetByIdAsync<STEMDto>(id);
 
             if (stem == null)
                 return StatusCode(StatusCodes.Status404NotFound,
@@ -36,7 +36,7 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateSTEM(STEMDto? stemModel)
+        public async Task<IActionResult> CreateSTEM(STEMDto? stemModel)
         {
             try
             {
@@ -47,8 +47,8 @@ namespace STEMHub.STEMHub_API.Controllers
                 var stemEntity = _unitOfWork.Mapper.Map<STEM>(stemModel);
                 if (stemEntity != null)
                 {
-                    _unitOfWork.STEMRepository.Add(stemEntity);
-                    _unitOfWork.Commits();
+                    await _unitOfWork.STEMRepository.AddAsync(stemEntity);
+                    await _unitOfWork.CommitAsync();
 
                     var stemDto = _unitOfWork.Mapper.Map<STEMDto>(stemEntity);
 
@@ -65,11 +65,11 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateSTEM(Guid id, STEMDto updatedSTEMModel)
+        public async Task<IActionResult> UpdateSTEM(Guid id, STEMDto updatedSTEMModel)
         {
             try
             {
-                var existingSTEMEntity = _unitOfWork.STEMRepository.GetById<STEM>(id);
+                var existingSTEMEntity = await _unitOfWork.STEMRepository.GetByIdAsync<STEM>(id);
 
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
                 if (existingSTEMEntity == null)
@@ -78,9 +78,8 @@ namespace STEMHub.STEMHub_API.Controllers
 
                 existingSTEMEntity.STEMName = updatedSTEMModel.STEMName;
 
-                _unitOfWork.STEMRepository.Update(existingSTEMEntity);
-
-                _unitOfWork.Commits();
+                await _unitOfWork.STEMRepository.UpdateAsync(existingSTEMEntity);
+                await _unitOfWork.CommitAsync();
 
                 return Ok(new { message = "Cập nhật thành công" });
             }
@@ -100,23 +99,23 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteSTEM(Guid id)
+        public async Task<IActionResult> DeleteSTEM(Guid id)
         {
-            var stemEntity = _unitOfWork.STEMRepository.GetById<STEMDto>(id);
+            var stemEntity = await _unitOfWork.STEMRepository.GetByIdAsync<STEMDto>(id);
 
             if (stemEntity == null)
                 return NotFound();
 
-            _unitOfWork.STEMRepository.Delete(id);
-            _unitOfWork.Commits();
+            await _unitOfWork.STEMRepository.DeleteAsync(id);
+            await _unitOfWork.CommitAsync();
 
             return Ok(new { message = "Xóa thành công" });
         }
 
         [HttpGet("search")]
-        public IActionResult SearchSTEMs([FromQuery] string stemKey)
+        public async Task<IActionResult> SearchSTEMs([FromQuery] string stemKey)
         {
-            var stems = _unitOfWork.STEMRepository.Search<STEMDto>(stem =>
+            var stems = await _unitOfWork.STEMRepository.SearchAsync<STEMDto>(stem =>
                 stem.STEMName != null &&
                 stem.STEMName.Contains(stemKey));
             if (stems == null || !stems.Any())

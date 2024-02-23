@@ -224,6 +224,19 @@ namespace STEMHub.STEMHub_Service.Services.UserManagement
             return response;
         }
 
+        public async Task<string> GeneratePasswordResetTokenAsync(ApplicationUser user)
+        {
+            var authClaims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("ResetPassword", "true"),
+            };
+
+            var jwtToken = GetToken(authClaims);
+
+            return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+        }
 
         #region PrivateMethods
         private JwtSecurityToken GetToken(List<Claim> authClaims)
@@ -270,7 +283,7 @@ namespace STEMHub.STEMHub_Service.Services.UserManagement
 
         }
 
-
+        
 
         #endregion
 

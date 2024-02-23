@@ -17,16 +17,16 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllVideo()
+        public async Task<IActionResult> GetAllVideo()
         {
-            var video = _unitOfWork.VideoRepository.GetAll<VideoDto>();
+            var video = await _unitOfWork.VideoRepository.GetAllAsync<VideoDto>();
             return Ok(video);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetVideo(Guid id)
+        public async Task<IActionResult> GetVideo(Guid id)
         {
-            var video = _unitOfWork.VideoRepository.GetById<VideoDto>(id);
+            var video = await _unitOfWork.VideoRepository.GetByIdAsync<VideoDto>(id);
 
             if (video == null)
                 return StatusCode(StatusCodes.Status404NotFound,
@@ -36,7 +36,7 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateVideo(VideoDto? videoModel)
+        public async Task<IActionResult> CreateVideo(VideoDto? videoModel)
         {
             try
             {
@@ -47,8 +47,8 @@ namespace STEMHub.STEMHub_API.Controllers
                 var videoEntity = _unitOfWork.Mapper.Map<Video>(videoModel);
                 if (videoEntity != null)
                 {
-                    _unitOfWork.VideoRepository.Add(videoEntity);
-                    _unitOfWork.Commits();
+                    await _unitOfWork.VideoRepository.AddAsync(videoEntity);
+                    await _unitOfWork.CommitAsync();
 
                     var videoDto = _unitOfWork.Mapper.Map<VideoDto>(videoEntity);
 
@@ -65,11 +65,11 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateVideo(Guid id, VideoDto updatedVideoModel)
+        public async Task<IActionResult> UpdateVideo(Guid id, VideoDto updatedVideoModel)
         {
             try
             {
-                var existingVideoEntity = _unitOfWork.VideoRepository.GetById<Video>(id);
+                var existingVideoEntity =await _unitOfWork.VideoRepository.GetByIdAsync<Video>(id);
 
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
                 if (existingVideoEntity == null)
@@ -79,9 +79,8 @@ namespace STEMHub.STEMHub_API.Controllers
                 existingVideoEntity.VideoTitle = updatedVideoModel.VideoTitle;
                 existingVideoEntity.Path = updatedVideoModel.Path;
 
-                _unitOfWork.VideoRepository.Update(existingVideoEntity);
-
-                _unitOfWork.Commits();
+                await _unitOfWork.VideoRepository.UpdateAsync(existingVideoEntity);
+                await _unitOfWork.CommitAsync();
 
                 return Ok(new { message = "Cập nhật thành công" });
             }
@@ -101,26 +100,26 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteVideo(Guid id)
+        public async Task<IActionResult> DeleteVideo(Guid id)
         {
-            var videoEntity = _unitOfWork.VideoRepository.GetById<VideoDto>(id);
+            var videoEntity = await _unitOfWork.VideoRepository.GetByIdAsync<VideoDto>(id);
 
             if (videoEntity == null)
                 return NotFound();
 
-            _unitOfWork.VideoRepository.Delete(id);
-            _unitOfWork.Commits();
+            await _unitOfWork.VideoRepository.DeleteAsync(id);
+            await _unitOfWork.CommitAsync();
 
             return Ok(new { message = "Xóa thành công" });
         }
 
         [HttpGet("search")]
-        public IActionResult SearchVideos([FromQuery] string videoKey)
+        public async Task<IActionResult> SearchVideos([FromQuery] string videoKey)
         {
-            var videos = _unitOfWork.VideoRepository.Search<VideoDto>(video =>
+            var videos = await _unitOfWork.VideoRepository.SearchAsync<VideoDto>(video =>
                 video.VideoTitle != null &&
                 video.VideoTitle.Contains(videoKey));
-            if (videos == null || !videos.Any())
+            if (!videos.Any())
             {
                 return StatusCode(StatusCodes.Status404NotFound,
                     new Response { Status = "Thất bại", Message = $"Không có Video chứa từ khoá {videoKey}" });

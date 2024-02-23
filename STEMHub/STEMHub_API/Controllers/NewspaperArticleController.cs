@@ -17,16 +17,16 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllNewspaperArticle()
+        public async Task<IActionResult> GetAllNewspaperArticle()
         {
-            var newspaperArticle = _unitOfWork.NewspaperArticleRepository.GetAll<NewspaperArticleDto>();
+            var newspaperArticle = await _unitOfWork.NewspaperArticleRepository.GetAllAsync<NewspaperArticleDto>();
             return Ok(newspaperArticle);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetNewspaperArticle(Guid id)
+        public async Task<IActionResult> GetNewspaperArticle(Guid id)
         {
-            var newspaperArticle = _unitOfWork.NewspaperArticleRepository.GetById<NewspaperArticleDto>(id);
+            var newspaperArticle =await _unitOfWork.NewspaperArticleRepository.GetByIdAsync<NewspaperArticleDto>(id);
 
             if (newspaperArticle == null)
                 return StatusCode(StatusCodes.Status404NotFound,
@@ -36,7 +36,7 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateNewspaperArticle(NewspaperArticleDto? newspaperArticleModel)
+        public async Task<IActionResult> CreateNewspaperArticle(NewspaperArticleDto? newspaperArticleModel)
         {
             try
             {
@@ -47,8 +47,8 @@ namespace STEMHub.STEMHub_API.Controllers
                 var newspaperArticleEntity = _unitOfWork.Mapper.Map<NewspaperArticle>(newspaperArticleModel);
                 if (newspaperArticleEntity != null)
                 {
-                    _unitOfWork.NewspaperArticleRepository.Add(newspaperArticleEntity);
-                    _unitOfWork.Commits();
+                    await _unitOfWork.NewspaperArticleRepository.AddAsync(newspaperArticleEntity);
+                    await _unitOfWork.CommitAsync();
 
                     var newspaperArticleDto = _unitOfWork.Mapper.Map<NewspaperArticleDto>(newspaperArticleEntity);
 
@@ -65,11 +65,11 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateNewspaperArticle(Guid id, NewspaperArticleDto updatedNewspaperArticleModel)
+        public async Task<IActionResult> UpdateNewspaperArticle(Guid id, NewspaperArticleDto updatedNewspaperArticleModel)
         {
             try
             {
-                var existingNewspaperArticleEntity = _unitOfWork.NewspaperArticleRepository.GetById<NewspaperArticle>(id);
+                var existingNewspaperArticleEntity = await _unitOfWork.NewspaperArticleRepository.GetByIdAsync<NewspaperArticle>(id);
 
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
                 if (existingNewspaperArticleEntity == null)
@@ -80,9 +80,8 @@ namespace STEMHub.STEMHub_API.Controllers
                 existingNewspaperArticleEntity.Content_NA = updatedNewspaperArticleModel.Content_NA;
                 existingNewspaperArticleEntity.Image = updatedNewspaperArticleModel.Image;
 
-                _unitOfWork.NewspaperArticleRepository.Update(existingNewspaperArticleEntity);
-
-                _unitOfWork.Commits();
+                await _unitOfWork.NewspaperArticleRepository.UpdateAsync(existingNewspaperArticleEntity);
+                await _unitOfWork.CommitAsync();
 
                 return Ok(new { message = "Cập nhật thành công" });
             }
@@ -102,26 +101,26 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteNewspaperArticle(Guid id)
+        public async Task<IActionResult> DeleteNewspaperArticle(Guid id)
         {
-            var newspaperArticleEntity = _unitOfWork.NewspaperArticleRepository.GetById<NewspaperArticleDto>(id);
+            var newspaperArticleEntity =await _unitOfWork.NewspaperArticleRepository.GetByIdAsync<NewspaperArticleDto>(id);
 
             if (newspaperArticleEntity == null)
                 return NotFound();
 
-            _unitOfWork.NewspaperArticleRepository.Delete(id);
-            _unitOfWork.Commits();
+            await _unitOfWork.NewspaperArticleRepository.DeleteAsync(id);
+            await _unitOfWork.CommitAsync();
 
             return Ok(new { message = "Xóa thành công" });
         }
 
         [HttpGet("search")]
-        public IActionResult SearchNewspaperArticles([FromQuery] string newspaperArticleKey)
+        public async Task<IActionResult> SearchNewspaperArticles([FromQuery] string newspaperArticleKey)
         {
-            var newspaperArticles = _unitOfWork.NewspaperArticleRepository.Search<NewspaperArticleDto>(newspaperArticles =>
+            var newspaperArticles = await _unitOfWork.NewspaperArticleRepository.SearchAsync<NewspaperArticleDto>(newspaperArticles =>
                 newspaperArticles.Title != null &&
                 newspaperArticles.Title.Contains(newspaperArticleKey));
-            if (newspaperArticles == null || !newspaperArticles.Any())
+            if (!newspaperArticles.Any())
             {
                 return StatusCode(StatusCodes.Status404NotFound,
                     new Response { Status = "Thất bại", Message = $"Không có Chủ đề bài viết chứa từ khoá {newspaperArticleKey}" });

@@ -4,11 +4,11 @@ namespace STEMHub.STEMHub_Service.Interfaces
 {
     public interface ICrudRepository<T> where T : class
     {
-        IEnumerable<TDto> GetAll<TDto>();
-        public TDto GetById<TDto>(Guid id);
-        public Task Add(T entity);
-        public Task Update(T entity);
-        public Task Delete(Guid id);
-        IEnumerable<TDto> Search<TDto>(Expression<Func<T, bool>> predicate);
+        Task<IEnumerable<TDto>> GetAllAsync<TDto>();
+        Task<TDto> GetByIdAsync<TDto>(Guid id);
+        Task AddAsync(T entity);
+        Task UpdateAsync(T entity);
+        Task DeleteAsync(Guid id);
+        Task<IEnumerable<TDto>> SearchAsync<TDto>(Expression<Func<T, bool>> predicate);
     }
 }

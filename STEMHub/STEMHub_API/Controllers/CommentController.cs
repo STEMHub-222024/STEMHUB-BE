@@ -16,16 +16,16 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllComment()
+        public async Task<IActionResult> GetAllComment()
         {
-            var comment = _unitOfWork.CommentRepository.GetAll<CommentDto>();
+            var comment = await _unitOfWork.CommentRepository.GetAllAsync<CommentDto>();
             return Ok(comment);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetComment(Guid id)
+        public async Task<IActionResult> GetComment(Guid id)
         {
-            var comment = _unitOfWork.CommentRepository.GetById<CommentDto>(id);
+            var comment = await _unitOfWork.CommentRepository.GetByIdAsync<CommentDto>(id);
 
             if (comment == null)
                 return StatusCode(StatusCodes.Status404NotFound,
@@ -35,7 +35,7 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateComment(CommentDto commentModel)
+        public async Task<IActionResult> CreateComment(CommentDto commentModel)
         {
             try
             {
@@ -46,8 +46,8 @@ namespace STEMHub.STEMHub_API.Controllers
                 var commentEntity = _unitOfWork.Mapper.Map<Comment>(commentModel);
                 if (commentEntity != null)
                 {
-                    _unitOfWork.CommentRepository.Add(commentEntity);
-                    _unitOfWork.Commits();
+                    await _unitOfWork.CommentRepository.AddAsync(commentEntity);
+                    await _unitOfWork.CommitAsync();
 
                     var commentDto = _unitOfWork.Mapper.Map<CommentDto>(commentEntity);
 
@@ -63,11 +63,11 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateComment(Guid id, CommentDto updatedCommentModel)
+        public async Task<IActionResult> UpdateComment(Guid id, CommentDto updatedCommentModel)
         {
             try
             {
-                var existingCommentEntity = _unitOfWork.CommentRepository.GetById<Comment>(id);
+                var existingCommentEntity = await _unitOfWork.CommentRepository.GetByIdAsync<Comment>(id);
 
                 if (existingCommentEntity == null)
                     return StatusCode(StatusCodes.Status404NotFound,
@@ -76,9 +76,9 @@ namespace STEMHub.STEMHub_API.Controllers
                 existingCommentEntity.Content_C = updatedCommentModel.Content_C;
                 existingCommentEntity.Rate = updatedCommentModel.Rate;
 
-                _unitOfWork.CommentRepository.Update(existingCommentEntity);
+                await _unitOfWork.CommentRepository.UpdateAsync(existingCommentEntity);
 
-                _unitOfWork.Commits();
+                await _unitOfWork.CommitAsync();
 
                 return Ok(new { message = "Cập nhật thành công" });
             }
@@ -98,15 +98,15 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteComment(Guid id)
+        public async Task<IActionResult> DeleteComment(Guid id)
         {
-            var commentEntity = _unitOfWork.CommentRepository.GetById<CommentDto>(id);
+            var commentEntity = _unitOfWork.CommentRepository.GetByIdAsync<CommentDto>(id);
 
             if (commentEntity == null)
                 return NotFound();
 
-            _unitOfWork.CommentRepository.Delete(id);
-            _unitOfWork.Commits();
+            await _unitOfWork.CommentRepository.DeleteAsync(id);
+            await _unitOfWork.CommitAsync();
 
             return Ok(new { message = "Xóa thành công" });
         }

@@ -18,6 +18,8 @@ namespace STEMHub.STEMHub_Service
         public ICrudRepository<STEM> STEMRepository { get; set; } = null!;
         public ICrudRepository<Topic> TopicRepository { get; set; } = null!;
         public ICrudRepository<Video> VideoRepository { get; set; } = null!;
+        public ICrudRepository<ApplicationUser> ApplicationUserRepository { get; set; }
+        public ICrudUserRepository<ApplicationUser> ApplicationUserRepository_UD { get; set; }
 
         public UnitOfWork(STEMHubDbContext context, IMapper mapper)
         {
@@ -35,11 +37,18 @@ namespace STEMHub.STEMHub_Service
             STEMRepository = new CrudRepository<STEM>(_context, mapper);
             TopicRepository = new CrudRepository<Topic>(_context, mapper);
             VideoRepository = new CrudRepository<Video>(_context, mapper);
+            ApplicationUserRepository = new CrudRepository<ApplicationUser>(_context, mapper);
+            ApplicationUserRepository_UD = new CrudUserRepository<ApplicationUser>(_context, mapper);
         }
 
-        public void Commits()
+        public void Commit()
         {
             _context.SaveChanges();
+        }
+
+        public async Task CommitAsync()
+        { 
+            await _context.SaveChangesAsync();
         }
 
         public void Dispose()

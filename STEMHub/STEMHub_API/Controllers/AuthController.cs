@@ -28,7 +28,7 @@ namespace STEMHub.STEMHub_API.Controllers
             _user = user;
         }
 
-        [HttpPost]
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUser registerUser)
         {
             var tokenResponse = await _user.CreateUserWithTokenAsync(registerUser);

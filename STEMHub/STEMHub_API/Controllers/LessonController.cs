@@ -17,16 +17,16 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllLesson()
+        public async Task<IActionResult> GetAllLesson()
         {
-            var lesson = _unitOfWork.LessonRepository.GetAll<LessonDto>();
+            var lesson =await _unitOfWork.LessonRepository.GetAllAsync<LessonDto>();
             return Ok(lesson);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetLesson(Guid id)
+        public async Task<IActionResult> GetLesson(Guid id)
         {
-            var lesson = _unitOfWork.LessonRepository.GetById<LessonDto>(id);
+            var lesson = await _unitOfWork.LessonRepository.GetByIdAsync<LessonDto>(id);
 
             if (lesson == null)
                 return StatusCode(StatusCodes.Status404NotFound,
@@ -36,7 +36,7 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateLesson(LessonDto? lessonModel)
+        public async Task<IActionResult> CreateLesson(LessonDto? lessonModel)
         {
             try
             {
@@ -47,8 +47,8 @@ namespace STEMHub.STEMHub_API.Controllers
                 var lessonEntity = _unitOfWork.Mapper.Map<Lesson>(lessonModel);
                 if (lessonEntity != null)
                 {
-                    _unitOfWork.LessonRepository.Add(lessonEntity);
-                    _unitOfWork.Commits();
+                    await _unitOfWork.LessonRepository.AddAsync(lessonEntity);
+                    await _unitOfWork.CommitAsync();
 
                     var lessonDto = _unitOfWork.Mapper.Map<LessonDto>(lessonEntity);
 
@@ -66,11 +66,11 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateLesson(Guid id, LessonDto updatedLessonModel)
+        public async Task<IActionResult> UpdateLesson(Guid id, LessonDto updatedLessonModel)
         {
             try
             {
-                var existingLessonEntity = _unitOfWork.LessonRepository.GetById<Lesson>(id);
+                var existingLessonEntity = await _unitOfWork.LessonRepository.GetByIdAsync<Lesson>(id);
 
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
                 if (existingLessonEntity == null)
@@ -79,9 +79,9 @@ namespace STEMHub.STEMHub_API.Controllers
 
                 existingLessonEntity.LessonName = updatedLessonModel.LessonName;
 
-                _unitOfWork.LessonRepository.Update(existingLessonEntity);
+                await _unitOfWork.LessonRepository.UpdateAsync(existingLessonEntity);
 
-                _unitOfWork.Commits();
+                await _unitOfWork.CommitAsync();
 
                 return Ok(new { message = "Cập nhật thành công" });
             }
@@ -101,26 +101,26 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteLesson(Guid id)
+        public async Task<IActionResult> DeleteLesson(Guid id)
         {
-            var lessonEntity = _unitOfWork.LessonRepository.GetById<LessonDto>(id);
+            var lessonEntity = await _unitOfWork.LessonRepository.GetByIdAsync<LessonDto>(id);
 
             if (lessonEntity == null)
                 return NotFound();
 
-            _unitOfWork.LessonRepository.Delete(id);
-            _unitOfWork.Commits();
+            await _unitOfWork.LessonRepository.DeleteAsync(id);
+            await _unitOfWork.CommitAsync();
 
             return Ok(new { message = "Xóa thành công" });
         }
 
         [HttpGet("search")]
-        public IActionResult SearchLessons([FromQuery] string lessonKey)
+        public async Task<IActionResult> SearchLessons([FromQuery] string lessonKey)
         {
-            var lessons = _unitOfWork.LessonRepository.Search<LessonDto>(lesson =>
+            var lessons =await _unitOfWork.LessonRepository.SearchAsync<LessonDto>(lesson =>
                 lesson.LessonName != null &&
                 lesson.LessonName.Contains(lessonKey));
-            if (lessons == null || !lessons.Any())
+            if (!lessons.Any())
             {
                 return StatusCode(StatusCodes.Status404NotFound,
                     new Response { Status = "Thất bại", Message = $"Không có Bài Học chứa từ khoá {lessonKey}" });

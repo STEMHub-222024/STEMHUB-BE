@@ -17,16 +17,16 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllBanner()
+        public async Task<IActionResult> GetAllBanner()
         {
-            var banner = _unitOfWork.BannerRepository.GetAll<BannerDto>();
+            var banner = await _unitOfWork.BannerRepository.GetAllAsync<BannerDto>();
             return Ok(banner);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetBanner(Guid id)
+        public async Task<IActionResult> GetBanner(Guid id)
         {
-            var banner = _unitOfWork.BannerRepository.GetById<BannerDto>(id);
+            var banner =await _unitOfWork.BannerRepository.GetByIdAsync<BannerDto>(id);
 
             if (banner == null)
                 return StatusCode(StatusCodes.Status404NotFound,
@@ -36,7 +36,7 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateBanner(BannerDto? bannerModel)
+        public async Task<IActionResult> CreateBanner(BannerDto? bannerModel)
         {
             try
             {
@@ -47,8 +47,8 @@ namespace STEMHub.STEMHub_API.Controllers
                 var bannerEntity = _unitOfWork.Mapper.Map<Banner>(bannerModel);
                 if (bannerEntity != null)
                 {
-                    _unitOfWork.BannerRepository.Add(bannerEntity);
-                    _unitOfWork.Commits();
+                    await _unitOfWork.BannerRepository.AddAsync(bannerEntity);
+                    await _unitOfWork.CommitAsync();
 
                     var bannerDto = _unitOfWork.Mapper.Map<BannerDto>(bannerEntity);
 
@@ -65,13 +65,12 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateBanner(Guid id, BannerDto updatedBannerModel)
+        public async Task<IActionResult> UpdateBanner(Guid id, BannerDto updatedBannerModel)
         {
             try
             {
-                var existingBannerEntity = _unitOfWork.BannerRepository.GetById<Banner>(id);
+                var existingBannerEntity = await _unitOfWork.BannerRepository.GetByIdAsync<Banner>(id);
 
-                // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
                 if (existingBannerEntity == null)
                     return StatusCode(StatusCodes.Status404NotFound,
                         new Response { Status = "Thất bại", Message = "ID không tồn tại. Vui lòng kiểm tra lại" });
@@ -80,49 +79,42 @@ namespace STEMHub.STEMHub_API.Controllers
                 existingBannerEntity.Content = updatedBannerModel.Content;
                 existingBannerEntity.Image = updatedBannerModel.Image;
 
-                _unitOfWork.BannerRepository.Update(existingBannerEntity);
+                await _unitOfWork.BannerRepository.UpdateAsync(existingBannerEntity);
 
-                _unitOfWork.Commits();
+                await _unitOfWork.CommitAsync();
 
                 return Ok(new { message = "Cập nhật thành công" });
             }
             catch (Exception e)
             {
-                //if (_uniqueConstraintHandler.IsUniqueConstraintViolation(e))
-                //{
-                //    Log.Error(e, "Vi phạm trùng lặp!");
-                //    return BadRequest(new { ErrorMessage = "Vi phạm trùng lặp!", ErrorCode = "DUPLICATE_KEY" });
-                //}
-                //else
-                //{
-                return StatusCode(500, "Internal Server Error");
-                //}
+                return StatusCode(500, "Internal Server Error:");
             }
 
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteBanner(Guid id)
+        public async Task<IActionResult> DeleteBanner(Guid id)
         {
-            var bannerEntity = _unitOfWork.BannerRepository.GetById<BannerDto>(id);
+            var bannerEntity = await _unitOfWork.BannerRepository.GetByIdAsync<BannerDto>(id);
 
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             if (bannerEntity == null)
                 return NotFound();
 
-            _unitOfWork.BannerRepository.Delete(id);
-            _unitOfWork.Commits();
+            await _unitOfWork.BannerRepository.DeleteAsync(id);
+            await _unitOfWork.CommitAsync();
 
             return Ok(new { message = "Xóa thành công" });
         }
 
         [HttpGet("search")]
-        public IActionResult SearchBanners([FromQuery] string bannerKey)
+        public async Task<IActionResult> SearchBanners([FromQuery] string bannerKey)
         {
-            
-            var banners = _unitOfWork.BannerRepository.Search<BannerDto>(banner =>
+
+            var banners = await _unitOfWork.BannerRepository.SearchAsync<BannerDto>(banner =>
                 banner.Title != null &&
                 banner.Title.Contains(bannerKey));
-            if (banners == null || !banners.Any())
+            if (!banners.Any())
             {
                 return StatusCode(StatusCodes.Status404NotFound,
                     new Response { Status = "Thất bại", Message = $"Không có banner chứa từ khoá {bannerKey}" });

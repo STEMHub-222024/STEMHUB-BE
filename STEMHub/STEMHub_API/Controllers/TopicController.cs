@@ -17,16 +17,16 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllTopic()
+        public async Task<IActionResult> GetAllTopic()
         {
-            var topic = _unitOfWork.TopicRepository.GetAll<TopicDto>();
+            var topic = await _unitOfWork.TopicRepository.GetAllAsync<TopicDto>();
             return Ok(topic);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetTopic(Guid id)
+        public async Task<IActionResult> GetTopic(Guid id)
         {
-            var topic = _unitOfWork.TopicRepository.GetById<TopicDto>(id);
+            var topic = await _unitOfWork.TopicRepository.GetByIdAsync<TopicDto>(id);
 
             if (topic == null)
                 return StatusCode(StatusCodes.Status404NotFound,
@@ -36,7 +36,7 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateTopic(TopicDto topicModel)
+        public async Task<IActionResult> CreateTopic(TopicDto topicModel)
         {
             try
             {
@@ -47,8 +47,8 @@ namespace STEMHub.STEMHub_API.Controllers
                 var topicEntity = _unitOfWork.Mapper.Map<Topic>(topicModel);
                 if (topicEntity != null)
                 {
-                    _unitOfWork.TopicRepository.Add(topicEntity);
-                    _unitOfWork.Commits();
+                    await _unitOfWork.TopicRepository.AddAsync(topicEntity);
+                    await _unitOfWork.CommitAsync();
 
                     var topicDto = _unitOfWork.Mapper.Map<TopicDto>(topicEntity);
 
@@ -64,11 +64,11 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateTopic(Guid id, TopicDto updatedTopicModel)
+        public async Task<IActionResult> UpdateTopic(Guid id, TopicDto updatedTopicModel)
         {
             try
             {
-                var existingTopicEntity = _unitOfWork.TopicRepository.GetById<Topic>(id);
+                var existingTopicEntity = await _unitOfWork.TopicRepository.GetByIdAsync<Topic>(id);
 
                 if (existingTopicEntity == null)
                     return StatusCode(StatusCodes.Status404NotFound,
@@ -77,9 +77,9 @@ namespace STEMHub.STEMHub_API.Controllers
                 existingTopicEntity.TopicName = updatedTopicModel.TopicName;
                 existingTopicEntity.TopicImage = updatedTopicModel.TopicImage;
 
-                _unitOfWork.TopicRepository.Update(existingTopicEntity);
+                await _unitOfWork.TopicRepository.UpdateAsync(existingTopicEntity);
 
-                _unitOfWork.Commits();
+                await _unitOfWork.CommitAsync();
 
                 return Ok(new { message = "Cập nhật thành công" });
             }
@@ -99,26 +99,26 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteTopic(Guid id)
+        public async Task<IActionResult> DeleteTopic(Guid id)
         {
-            var topicEntity = _unitOfWork.TopicRepository.GetById<TopicDto>(id);
+            var topicEntity = await _unitOfWork.TopicRepository.GetByIdAsync<TopicDto>(id);
 
             if (topicEntity == null)
                 return NotFound();
 
-            _unitOfWork.TopicRepository.Delete(id);
-            _unitOfWork.Commits();
+            await _unitOfWork.TopicRepository.DeleteAsync(id);
+            _unitOfWork.Commit();
 
             return Ok(new { message = "Xóa thành công" });
         }
 
         [HttpGet("search")]
-        public IActionResult SearchTopics([FromQuery] string topicKey)
+        public async Task<IActionResult> SearchTopics([FromQuery] string topicKey)
         {
-            var topics = _unitOfWork.TopicRepository.Search<TopicDto>(topic =>
+            var topics = await _unitOfWork.TopicRepository.SearchAsync<TopicDto>(topic =>
                 topic.TopicName != null &&
                 topic.TopicName.Contains(topicKey));
-            if (topics == null || !topics.Any())
+            if (!topics.Any())
             {
                 return StatusCode(StatusCodes.Status404NotFound,
                     new Response { Status = "Thất bại", Message = $"Không có Chủ đề chứa từ khoá {topicKey}" });
