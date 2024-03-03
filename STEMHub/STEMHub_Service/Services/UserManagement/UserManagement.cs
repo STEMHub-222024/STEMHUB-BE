@@ -150,7 +150,7 @@ namespace STEMHub.STEMHub_Service.Services.UserManagement
                 authClaims.Add(new Claim(ClaimTypes.Role, role));
             }
 
-            var jwtToken = GetToken(authClaims); //access token
+            var jwtToken = GetToken(authClaims);
             var refreshToken = GenerateRefreshToken();
             _ = int.TryParse(_configuration["JWT:RefreshTokenValidity"], out int refreshTokenValidity);
 
@@ -224,19 +224,53 @@ namespace STEMHub.STEMHub_Service.Services.UserManagement
             return response;
         }
 
-        public async Task<string> GeneratePasswordResetTokenAsync(ApplicationUser user)
+        public async Task<ApiResponse<LoginResponse>> ResetPasswordAndGetJwtTokenAsync(ApplicationUser user, string newPassword)
         {
+            var resetPasswordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetPasswordResult = await _userManager.ResetPasswordAsync(user, resetPasswordToken, newPassword);
+
+            if (!resetPasswordResult.Succeeded)
+            {
+                return new ApiResponse<LoginResponse>
+                {
+                    IsSuccess = false,
+                    StatusCode = 400,
+                    Message = "Lỗi khi đặt lại mật khẩu"
+                };
+            }
+
             var authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("ResetPassword", "true"),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            foreach (var role in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var jwtToken = GetToken(authClaims);
 
-            return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+            return new ApiResponse<LoginResponse>
+            {
+                Response = new LoginResponse()
+                {
+                    AccessToken = new TokenType()
+                    {
+                        Token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
+                        ExpiryTokenDate = jwtToken.ValidTo
+                    }
+                },
+
+                IsSuccess = true,
+                StatusCode = 200,
+                Message = $"Token đã được tạo"
+            };
         }
+
+
 
         #region PrivateMethods
         private JwtSecurityToken GetToken(List<Claim> authClaims)

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using STEMHub.STEMHub_Data.Data;
 using STEMHub.STEMHub_Service.Authentication.Login;
 using STEMHub.STEMHub_Service.Authentication.SignUp;
@@ -70,6 +71,22 @@ namespace STEMHub.STEMHub_API.Controllers
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] Login loginModel)
         {
+            var userEmail = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginModel.Username);
+            if (userEmail == null)
+            {
+                return StatusCode(StatusCodes.Status404NotFound,
+                    new Response {Status = "Thất bại", Message = $"Người dùng {loginModel.Username} tồn tại." });
+            }
+
+            var passwordHasher = new PasswordHasher<ApplicationUser>();
+            var passwordVerificationResult = passwordHasher.VerifyHashedPassword(userEmail, userEmail.PasswordHash, loginModel.Password);
+
+            if (passwordVerificationResult != PasswordVerificationResult.Success)
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized,
+                    new Response { Status = "Thất bại", Message = $"Mật khẩu không khớp!" });
+            }
+
             var loginOtpResponse = await _user.GetOtpByLoginAsync(loginModel);
             if (loginOtpResponse.Response != null)
             {
@@ -91,7 +108,6 @@ namespace STEMHub.STEMHub_API.Controllers
                 }
             }
             return Unauthorized();
-
         }
 
         [HttpPost]
@@ -119,6 +135,5 @@ namespace STEMHub.STEMHub_API.Controllers
             return StatusCode(StatusCodes.Status404NotFound,
                 new Response { Status = "Thành công", Message = $"Mã không hợp lệ" });
         }
-
     }
 }

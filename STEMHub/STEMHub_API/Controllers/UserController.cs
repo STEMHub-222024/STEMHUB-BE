@@ -6,6 +6,7 @@ using STEMHub.STEMHub_Service.Authentication.Login;
 using STEMHub.STEMHub_Service.Constants;
 using STEMHub.STEMHub_Service.DTO;
 using STEMHub.STEMHub_Service.Interfaces;
+using System.Web;
 
 namespace STEMHub.STEMHub_API.Controllers
 {
@@ -39,62 +40,7 @@ namespace STEMHub.STEMHub_API.Controllers
             return Ok(user);
         }
 
-        [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest model)
-        {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
-            {
-                return BadRequest("Không tìm thấy người dùng.");
-            }
-
-            var token = await _user.GeneratePasswordResetTokenAsync(user);
-            user.PasswordResetToken = token;
-            user.ResetTokenExpires = DateTime.Now.AddMinutes(15);
-            await _userManager.UpdateAsync(user);
-
-            var message = new Message(new string[] { user.Email! }, "Đặt lại mật khẩu OTP", $"{token}");
-            _emailService.SendEmail(message);
-
-            return Ok($"OTP được gửi tới {model.Email} thành công! Vui lòng kiểm tra lại email.");
-
-        }
-
-        [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
-        {
-            var user = await _userManager.FindByEmailAsync(request.Email);
-            if (user == null)
-            {
-                return BadRequest("Không tìm thấy người dùng.");
-            }
-
-            if (user.PasswordResetToken != request.Token || user.ResetTokenExpires < DateTime.Now)
-            {
-                return BadRequest("Token không hợp lệ hoặc đã hết hạn.");
-            }
-
-            //var verifyTokenResult = await _userManager.VerifyTwoFactorTokenAsync(user, "Email", request.Token);
-            //if (!verifyTokenResult)
-            //{
-            //    return BadRequest("Mã OTP không hợp lệ.");
-            //}
-
-            var resetPasswordResult = await _userManager.ResetPasswordAsync(user, request.Token, request.Password);
-            if (resetPasswordResult.Succeeded)
-            {
-                user.PasswordResetToken = null;
-                user.ResetTokenExpires = null;
-                await _userManager.UpdateAsync(user);
-
-                return Ok("Đổi mật khẩu thành công.");
-            }
-            else
-            {
-                var errors = string.Join(", ", resetPasswordResult.Errors.Select(e => e.Description));
-                return BadRequest($"Đổi mật khẩu thất bại: {errors}");
-            }
-        }
+        
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(string id, UserDto updatedUserModel)
@@ -146,5 +92,58 @@ namespace STEMHub.STEMHub_API.Controllers
 
             return Ok(new { message = "Xóa thành công" });
         }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return BadRequest("Không tìm thấy người dùng.");
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            user.PasswordResetToken = token;
+            user.ResetTokenExpires = DateTime.UtcNow.AddMinutes(5);
+            await _userManager.UpdateAsync(user);
+
+            var message = new Message(new string[] { user.Email! }, "Đặt lại mật khẩu OTP", $"{token}");
+            _emailService.SendEmail(message);
+
+            return Ok($"OTP được gửi tới {model.Email} thành công! Vui lòng kiểm tra lại email.");
+
+        }
+
+        [HttpPost]
+        [Route("api/resetpassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return BadRequest("Không tìm thấy người dùng với email đã cung cấp.");
+            }
+
+
+            // Xác minh token
+            //var isValidToken = await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider, "ResetPassword", decodedToken);
+            var isValidToken = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultProvider, "ResetPassword", model.Token);
+
+            if (!isValidToken)
+            {
+                return BadRequest("Token không hợp lệ.");
+            }
+
+            // Thực hiện đặt lại mật khẩu
+            var resetPasswordResult = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+
+            if (!resetPasswordResult.Succeeded)
+            {
+                return BadRequest("Lỗi khi đặt lại mật khẩu.");
+            }
+
+            return Ok("Mật khẩu đã được đặt lại thành công.");
+        }
+
     }
 }
