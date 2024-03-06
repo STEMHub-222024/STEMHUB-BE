@@ -77,8 +77,8 @@ namespace STEMHub.STEMHub_API.Controllers
                         new Response { Status = "Thất bại", Message = "ID không tồn tại. Vui lòng kiểm tra lại" });
 
                 existingNewspaperArticleEntity.Title = updatedNewspaperArticleModel.Title;
-                existingNewspaperArticleEntity.Content_NA = updatedNewspaperArticleModel.Content_NA;
-                existingNewspaperArticleEntity.Image = updatedNewspaperArticleModel.Image;
+                existingNewspaperArticleEntity.Markdown = updatedNewspaperArticleModel.Markdown;
+                existingNewspaperArticleEntity.HtmlContent = updatedNewspaperArticleModel.HtmlContent;
 
                 await _unitOfWork.NewspaperArticleRepository.UpdateAsync(existingNewspaperArticleEntity);
                 await _unitOfWork.CommitAsync();

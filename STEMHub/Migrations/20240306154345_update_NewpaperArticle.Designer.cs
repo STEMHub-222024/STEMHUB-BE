@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using STEMHub.STEMHub_Data.Data;
 
@@ -11,9 +12,10 @@ using STEMHub.STEMHub_Data.Data;
 namespace STEMHub.Migrations
 {
     [DbContext(typeof(STEMHubDbContext))]
-    partial class STEMHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240306154345_update_NewpaperArticle")]
+    partial class update_NewpaperArticle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,14 +53,14 @@ namespace STEMHub.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "39fdac39-aa21-4e65-899d-85f9f4580361",
+                            Id = "61febf14-678b-4521-88b1-3c843016e113",
                             ConcurrencyStamp = "1",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = "13fec886-f124-4e6f-a52d-321942cb4976",
+                            Id = "3095b3e8-c939-4632-a721-2debe8561bcc",
                             ConcurrencyStamp = "2",
                             Name = "User",
                             NormalizedName = "User"
@@ -385,9 +387,6 @@ namespace STEMHub.Migrations
 
                     b.Property<string>("TopicName")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("View")
-                        .HasColumnType("int");
 
                     b.HasKey("TopicId");
 

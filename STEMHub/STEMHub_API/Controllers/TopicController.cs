@@ -1,5 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using STEMHub.STEMHub_Data.Data;
 using STEMHub.STEMHub_Data.Entities;
 using STEMHub.STEMHub_Service;
 using STEMHub.STEMHub_Service.Constants;
@@ -11,9 +13,10 @@ namespace STEMHub.STEMHub_API.Controllers
     [ApiController]
     public class TopicController : BaseController
     {
-        public TopicController(UnitOfWork unitOfWork) : base(unitOfWork)
+        private readonly STEMHubDbContext _context;
+        public TopicController(UnitOfWork unitOfWork, STEMHubDbContext context) : base(unitOfWork)
         {
-
+            _context = context;
         }
 
         [HttpGet]
@@ -26,13 +29,16 @@ namespace STEMHub.STEMHub_API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTopic(Guid id)
         {
-            var topic = await _unitOfWork.TopicRepository.GetByIdAsync<TopicDto>(id);
-
-            if (topic == null)
+            var topicDto = await _unitOfWork.TopicRepository.GetByIdAsync<TopicDto>(id);
+            var topic = await _unitOfWork.TopicRepository.GetByIdAsync<Topic>(id);
+            if (topicDto == null)
                 return StatusCode(StatusCodes.Status404NotFound,
                     new Response { Status = "Thất bại", Message = "ID không tồn tại. Vui lòng kiểm tra lại" });
-            
-            return Ok(topic);
+
+            topic.View++;
+            await _unitOfWork.CommitAsync();
+
+            return Ok(topicDto);
         }
 
         [HttpPost]
@@ -126,5 +132,26 @@ namespace STEMHub.STEMHub_API.Controllers
 
             return Ok(topics);
         }
+
+        [HttpGet("suggestions")]
+        public async Task<IActionResult> GetSuggestions()
+        {
+            var suggestedTopics = await _context.Topic
+                .OrderByDescending(p => p.View)
+                .Where(p => p.View > 0)
+                .ToListAsync();
+
+            var suggestedTopicDtos = suggestedTopics.Select(topic => new TopicDto
+            {
+                TopicId = topic.TopicId,
+                TopicName = topic.TopicName,
+                TopicImage = topic.TopicImage,
+                View = topic.View,
+                STEMId = topic.STEMId
+            }).ToList();
+
+            return Ok(suggestedTopicDtos);
+        }
+
     }
 }

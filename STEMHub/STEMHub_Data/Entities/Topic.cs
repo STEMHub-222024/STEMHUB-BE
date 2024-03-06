@@ -7,6 +7,7 @@ namespace STEMHub.STEMHub_Data.Entities
         public Guid TopicId { get; set; }
         public string? TopicName { get; set; }
         public string? TopicImage { get; set; }
+        public int View { get; set; }
 
         public STEM STEM { get; set; }
         [ForeignKey("STEMId")]
