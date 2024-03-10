@@ -14,6 +14,8 @@ using System.Reflection;
 using STEMHub.STEMHub_Data.Entities;
 using STEMHub.STEMHub_Service.Repository;
 using STEMHub.STEMHub_Service;
+using STEMHub.STEMHub_Service.DTO;
+using STEMHub.STEMHub_Service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add database
@@ -91,6 +93,8 @@ builder.Services.AddSingleton(emailConfig);
 
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserManagement, UserManagement>();
+builder.Services.AddScoped<IPaginationService<TopicDto>, PaginationService<TopicDto>>();
+builder.Services.AddScoped<IPaginationService<NewspaperArticleDto>, PaginationService<NewspaperArticleDto>>();
 
 // Add services Mapper
 builder.Services.AddAutoMapper(typeof(Program));

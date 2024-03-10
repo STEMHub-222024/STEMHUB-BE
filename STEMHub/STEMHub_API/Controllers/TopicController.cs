@@ -6,6 +6,8 @@ using STEMHub.STEMHub_Data.Entities;
 using STEMHub.STEMHub_Service;
 using STEMHub.STEMHub_Service.Constants;
 using STEMHub.STEMHub_Service.DTO;
+using STEMHub.STEMHub_Service.Interfaces;
+using System.Text.Json;
 
 namespace STEMHub.STEMHub_API.Controllers
 {
@@ -14,9 +16,11 @@ namespace STEMHub.STEMHub_API.Controllers
     public class TopicController : BaseController
     {
         private readonly STEMHubDbContext _context;
-        public TopicController(UnitOfWork unitOfWork, STEMHubDbContext context) : base(unitOfWork)
+        private readonly IPaginationService<TopicDto> _paginationService;
+        public TopicController(UnitOfWork unitOfWork, STEMHubDbContext context, IPaginationService<TopicDto> paginationService) : base(unitOfWork)
         {
             _context = context;
+            _paginationService = paginationService;
         }
 
         [HttpGet]
@@ -134,11 +138,12 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpGet("suggestions")]
-        public async Task<IActionResult> GetSuggestions()
+        public async Task<IActionResult> GetSuggestions(Guid stemId)
         {
             var suggestedTopics = await _context.Topic
                 .OrderByDescending(p => p.View)
-                .Where(p => p.View > 0)
+                .Where(p => p.View > 0 && p.STEMId == stemId)
+                .Take(8)
                 .ToListAsync();
 
             var suggestedTopicDtos = suggestedTopics.Select(topic => new TopicDto
@@ -152,6 +157,42 @@ namespace STEMHub.STEMHub_API.Controllers
 
             return Ok(suggestedTopicDtos);
         }
+
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPagedTopics([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            try
+            {
+                var queryable = _context.Topic
+                    .Select(topic => new TopicDto
+                    {
+                        TopicId = topic.TopicId,
+                        TopicName = topic.TopicName,
+                        TopicImage = topic.TopicImage,
+                        View = topic.View,
+                        STEMId = topic.STEMId
+                    });
+
+                var (topics, totalCount, totalPages) = await _paginationService.GetPagedDataAsync(queryable, page, pageSize);
+
+                var paginationMetadata = new
+                {
+                    totalCount,
+                    totalPages,
+                    currentPage = page,
+                    pageSize
+                };
+
+                Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
+                return Ok(topics);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+
 
     }
 }

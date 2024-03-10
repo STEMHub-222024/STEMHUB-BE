@@ -4,6 +4,11 @@ using STEMHub.STEMHub_Data.Entities;
 using STEMHub.STEMHub_Service.Constants;
 using STEMHub.STEMHub_Service.DTO;
 using STEMHub.STEMHub_Service;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using STEMHub.STEMHub_Data.Data;
+using STEMHub.STEMHub_Service.Interfaces;
+using STEMHub.STEMHub_Service.Services;
 
 namespace STEMHub.STEMHub_API.Controllers
 {
@@ -11,9 +16,14 @@ namespace STEMHub.STEMHub_API.Controllers
     [ApiController]
     public class NewspaperArticleController : BaseController
     {
-        public NewspaperArticleController(UnitOfWork unitOfWork) : base(unitOfWork)
-        {
 
+        private readonly STEMHubDbContext _context;
+        private readonly IPaginationService<NewspaperArticleDto> _paginationService;
+
+        public NewspaperArticleController(UnitOfWork unitOfWork, STEMHubDbContext context, IPaginationService<NewspaperArticleDto> paginationService) : base(unitOfWork)
+        {
+            _context = context;
+            _paginationService = paginationService;
         }
 
         [HttpGet]
@@ -128,6 +138,42 @@ namespace STEMHub.STEMHub_API.Controllers
 
             return Ok(newspaperArticles);
         }
+
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPagedNewspaperArticles([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            try
+            {
+                var queryable = _context.NewspaperArticle
+                    .Select(newpaperArticle => new NewspaperArticleDto()
+                    {
+                        NewspaperArticleId = newpaperArticle.NewspaperArticleId,
+                        Title = newpaperArticle.Title,
+                        Markdown = newpaperArticle.Markdown,
+                        HtmlContent = newpaperArticle.HtmlContent,
+                        UserId = newpaperArticle.UserId
+                    });
+
+                var (newpaperArticles, totalCount, totalPages) = await _paginationService.GetPagedDataAsync(queryable, page, pageSize);
+
+                var paginationMetadata = new
+                {
+                    totalCount,
+                    totalPages,
+                    currentPage = page,
+                    pageSize
+                };
+
+                Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
+                return Ok(newpaperArticles);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+
     }
 }
 

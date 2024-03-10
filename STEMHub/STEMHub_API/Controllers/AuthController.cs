@@ -75,7 +75,7 @@ namespace STEMHub.STEMHub_API.Controllers
             if (userEmail == null)
             {
                 return StatusCode(StatusCodes.Status404NotFound,
-                    new Response {Status = "Thất bại", Message = $"Người dùng {loginModel.Username} tồn tại." });
+                    new Response {Status = "Thất bại", Message = $"Người dùng {loginModel.Username} không tồn tại." });
             }
 
             var passwordHasher = new PasswordHasher<ApplicationUser>();
