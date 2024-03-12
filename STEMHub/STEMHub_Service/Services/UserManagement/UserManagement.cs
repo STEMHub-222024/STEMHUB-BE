@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using STEMHub.STEMHub_Data.Data;
 using STEMHub.STEMHub_Service.Authentication.Login;
 using STEMHub.STEMHub_Service.Authentication.SignUp;
+using STEMHub.STEMHub_Service.Authentication.TwoFactor;
 using STEMHub.STEMHub_Service.Authentication.User;
 using STEMHub.STEMHub_Service.Interfaces;
 
@@ -57,7 +58,6 @@ namespace STEMHub.STEMHub_Service.Services.UserManagement
 
         public async Task<ApiResponse<CreateUserResponse>> CreateUserWithTokenAsync(RegisterUser registerUser)
         {
-            //Check User Exist 
             var userExist = await _userManager.FindByEmailAsync(registerUser.Email);
             if (userExist != null)
             {
@@ -70,13 +70,13 @@ namespace STEMHub.STEMHub_Service.Services.UserManagement
                 Email = registerUser.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = registerUser.Username,
-                TwoFactorEnabled = true
+                TwoFactorEnabled = false
             };
             var result = await _userManager.CreateAsync(user, registerUser.Password);
             if (result.Succeeded)
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                return new ApiResponse<CreateUserResponse> { Response = new CreateUserResponse() { User = user, Token = token }, IsSuccess = true, StatusCode = 201, Message = "Đã tạo người dùng" };
+                return new ApiResponse<CreateUserResponse> { Response = new CreateUserResponse() { User = user, Token = token }, IsSuccess = true, StatusCode = 201, Message = "Đâng ký thành công!" };
 
             }
             else
@@ -270,6 +270,67 @@ namespace STEMHub.STEMHub_Service.Services.UserManagement
             };
         }
 
+        public async Task<ApiResponse<TwoFactorResponse>> GenerateEnableTwoFactorOTPAsync(ApplicationUser user)
+        {
+            if (user != null)
+            {
+                var token = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+                user.OTPEnableTwoFactor = token;
+                await _userManager.UpdateAsync(user);
+                return new ApiResponse<TwoFactorResponse>
+                {
+                    Response = new TwoFactorResponse()
+                    {
+                        User = user,
+                        Token = token,
+                        IsTwoFactorEnable = true
+                    },
+                    IsSuccess = true,
+                    StatusCode = 200,
+                    Message = $"OTP đã được gửi đến {user.Email}. Vui lòng kiểm tra!"
+                };
+            }
+            else
+            {
+                return new ApiResponse<TwoFactorResponse>
+                {
+                    IsSuccess = false,
+                    StatusCode = 404,
+                    Message = $"Người dùng không tồn tại."
+                };
+            }
+        }
+
+        public async Task<ApiResponse<TwoFactorResponse>> GenerateDisableTwoFactorOTPAsync(ApplicationUser user)
+        {
+            if (user != null)
+            {
+                var token = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+                user.OTPEnableTwoFactor = token;
+                await _userManager.UpdateAsync(user);
+                return new ApiResponse<TwoFactorResponse>
+                {
+                    Response = new TwoFactorResponse()
+                    {
+                        User = user,
+                        Token = token,
+                        IsTwoFactorEnable = false
+                    },
+                    IsSuccess = true,
+                    StatusCode = 200,
+                    Message = $"OTP đã được gửi đến {user.Email}. Vui lòng kiểm tra!"
+                };
+            }
+            else
+            {
+                return new ApiResponse<TwoFactorResponse>
+                {
+                    IsSuccess = false,
+                    StatusCode = 404,
+                    Message = $"Người dùng không tồn tại."
+                };
+            }
+        }
 
 
         #region PrivateMethods

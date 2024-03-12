@@ -36,7 +36,7 @@ namespace STEMHub.STEMHub_API.Controllers
         [HttpGet]
         public  async Task<IActionResult> GetAllUser()
         {
-            var user = await _unitOfWork.ApplicationUserRepository.GetAllAsync<IdentityUser>();
+            var user = await _unitOfWork.ApplicationUserRepository.GetAllAsync<ApplicationUser>();
             return Ok(user);
         }
 
