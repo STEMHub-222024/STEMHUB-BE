@@ -20,6 +20,7 @@ namespace STEMHub.STEMHub_Service
         public ICrudRepository<Topic> TopicRepository { get; set; } = null!;
         public ICrudRepository<Video> VideoRepository { get; set; } = null!;
         public ICrudRepository<ApplicationUser> ApplicationUserRepository { get; set; }
+        public ICrudUserRepository<ApplicationUser> ApplicationUserRepository_UD { get; set; }
 
         public UnitOfWork(STEMHubDbContext context, IMapper mapper)
         {
@@ -39,6 +40,7 @@ namespace STEMHub.STEMHub_Service
             VideoRepository = new CrudRepository<Video>(_context, mapper);
             ApplicationUserRepository = new CrudRepository<ApplicationUser>(_context, mapper);
             IngredientsRepository = new CrudRepository<Ingredients>(_context, mapper);
+            ApplicationUserRepository_UD = new CrudUserRepository<ApplicationUser>(_context, mapper);
         }
 
         public void Commit()
