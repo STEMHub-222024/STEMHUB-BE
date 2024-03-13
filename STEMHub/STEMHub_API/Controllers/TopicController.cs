@@ -86,6 +86,7 @@ namespace STEMHub.STEMHub_API.Controllers
 
                 existingTopicEntity.TopicName = updatedTopicModel.TopicName;
                 existingTopicEntity.TopicImage = updatedTopicModel.TopicImage;
+                existingTopicEntity.Description = updatedTopicModel.Description;
 
                 await _unitOfWork.TopicRepository.UpdateAsync(existingTopicEntity);
 
@@ -151,6 +152,7 @@ namespace STEMHub.STEMHub_API.Controllers
                 TopicName = topic.TopicName,
                 TopicImage = topic.TopicImage,
                 View = topic.View,
+                Description = topic.Description,
                 STEMId = topic.STEMId
             }).ToList();
 
@@ -172,6 +174,7 @@ namespace STEMHub.STEMHub_API.Controllers
                 TopicName = topic.TopicName,
                 TopicImage = topic.TopicImage,
                 View = topic.View,
+                Description = topic.Description,
                 STEMId = topic.STEMId
             }).ToList();
 

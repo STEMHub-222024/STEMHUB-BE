@@ -197,60 +197,6 @@ namespace STEMHub.STEMHub_API.Controllers
             return Ok(new { Message = $"Bạn đang yêu cầu được tắt 2 yếu tố xác thực. Vui lòng kiểm tra email: {user.Email} của bạn để nhận mã OTP." });
         }
 
-        //[HttpPost("toggle-2fa")]
-        //public async Task<IActionResult> ToggleTwoFactorAuthentication(string userId, bool enable)
-        //{
-        //    var user = await _userManager.FindByIdAsync(userId);
-        //    if (user == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    ApiResponse<TwoFactorResponse> twoFactorResponse;
-
-        //    if (enable)
-        //    {
-        //        if (!user.TwoFactorEnabled)
-        //        {
-        //            return BadRequest(new { Message = "Yêu cầu không thành công! Tài khoản của bạn đã bật xác thực hai yếu tố" });
-        //        }
-        //        else
-        //        {
-        //            twoFactorResponse = await _user.GenerateEnableTwoFactorOTPAsync(user);
-        //            if (twoFactorResponse.Response != null)
-        //            {
-        //                var token = twoFactorResponse.Response.Token;
-        //                var message = new Message(new string[] { user.Email! }, "MÃ XÁC MINH 2 BƯỚC", $"Mã OTP của bạn là: {token}");
-        //                _emailService.SendEmail(message);
-        //            }
-        //        }
-                
-        //    }
-        //    else
-        //    {
-        //        if (!user.TwoFactorEnabled)
-        //        {
-        //            return BadRequest(new { Message = "Yêu cầu không thành công! Tài khoản của bạn chưa bật xác thực hai yếu tố" });
-        //        }
-        //        else
-        //        {
-        //            twoFactorResponse = await _user.GenerateDisableTwoFactorOTPAsync(user);
-        //            if (twoFactorResponse.Response != null)
-        //            {
-        //                var token = twoFactorResponse.Response.Token;
-        //                var message = new Message(new string[] { user.Email! }, "MÃ XÁC MINH 2 BƯỚC", $"Mã OTP của bạn là: {token}");
-        //                _emailService.SendEmail(message);
-        //            }
-        //        }
-                
-        //    }
-
-        //    await _userManager.UpdateAsync(user);
-
-        //    string actionMessage = enable ? "bật" : "tắt";
-        //    return Ok(new { Message = $"Bạn đang yêu cầu được {actionMessage} 2 yếu tố xác thực. Vui lòng kiểm tra email: {user.Email} của bạn để nhận mã OTP." });
-        //}
-
 
         [HttpPost("confirm-2fa")]
         public async Task<IActionResult> ConfirmTwoFactorAuthentication(string userId, string otpCode)
