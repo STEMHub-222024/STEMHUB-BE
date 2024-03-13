@@ -86,6 +86,7 @@ namespace STEMHub.STEMHub_API.Controllers
 
                 existingTopicEntity.TopicName = updatedTopicModel.TopicName;
                 existingTopicEntity.TopicImage = updatedTopicModel.TopicImage;
+                existingTopicEntity.Description = updatedTopicModel.Description;
 
                 await _unitOfWork.TopicRepository.UpdateAsync(existingTopicEntity);
 
@@ -137,6 +138,27 @@ namespace STEMHub.STEMHub_API.Controllers
             return Ok(topics);
         }
 
+        [HttpGet("suggestionsAll")]
+        public async Task<IActionResult> GetSuggestionsAll(Guid stemId)
+        {
+            var suggestedTopics = await _context.Topic
+                .OrderByDescending(p => p.View)
+                .Where(p => p.View > 0 && p.STEMId == stemId)
+                .ToListAsync();
+
+            var suggestedTopicDtos = suggestedTopics.Select(topic => new TopicDto
+            {
+                TopicId = topic.TopicId,
+                TopicName = topic.TopicName,
+                TopicImage = topic.TopicImage,
+                View = topic.View,
+                Description = topic.Description,
+                STEMId = topic.STEMId
+            }).ToList();
+
+            return Ok(suggestedTopicDtos);
+        }
+
         [HttpGet("suggestions")]
         public async Task<IActionResult> GetSuggestions(Guid stemId)
         {
@@ -152,6 +174,7 @@ namespace STEMHub.STEMHub_API.Controllers
                 TopicName = topic.TopicName,
                 TopicImage = topic.TopicImage,
                 View = topic.View,
+                Description = topic.Description,
                 STEMId = topic.STEMId
             }).ToList();
 

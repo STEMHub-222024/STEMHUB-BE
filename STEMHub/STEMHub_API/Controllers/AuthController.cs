@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using STEMHub.STEMHub_Data.Data;
+using STEMHub.STEMHub_Service;
 using STEMHub.STEMHub_Service.Authentication.Login;
 using STEMHub.STEMHub_Service.Authentication.SignUp;
+using STEMHub.STEMHub_Service.Authentication.TwoFactor;
 using STEMHub.STEMHub_Service.Authentication.User;
 using STEMHub.STEMHub_Service.Constants;
 using STEMHub.STEMHub_Service.Interfaces;
@@ -110,6 +112,7 @@ namespace STEMHub.STEMHub_API.Controllers
             return Unauthorized();
         }
 
+
         [HttpPost]
         [Route("login-2FA")]
         public async Task<IActionResult> LoginWithOTP(string code, string userName)
@@ -135,5 +138,93 @@ namespace STEMHub.STEMHub_API.Controllers
             return StatusCode(StatusCodes.Status404NotFound,
                 new Response { Status = "Thành công", Message = $"Mã không hợp lệ" });
         }
+
+        #region 2FA
+
+        [HttpPost("enable-2fa")]
+        public async Task<IActionResult> EnableTwoFactorAuthentication(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            if (user.TwoFactorEnabled == false)
+            {
+                var twoFactorResponse = await _user.GenerateEnableTwoFactorOTPAsync(user);
+                if (twoFactorResponse.Response != null)
+                {
+                    var token = twoFactorResponse.Response.Token;
+                    await _userManager.UpdateAsync(user);
+
+                    var message = new Message(new string[] { user.Email! }, "XÁC MINH 2 BƯỚC", $"Mã OTP của bạn là: {token}");
+                    _emailService.SendEmail(message);
+                }
+            }
+            else
+            {
+                return BadRequest(new { Message = "Yêu cầu không thành công! Tài khoản của bạn đã bật xác thực hai yếu tố" });
+            }
+            
+            return Ok(new { Message = $"Bạn đang yêu cầu được bật 2 yếu tố xác thực. Vui lòng kiểm tra email: {user.Email} của bạn để nhận mã OTP." });
+        }
+
+        [HttpPost("disable-2fa")]
+        public async Task<IActionResult> DisableTwoFactorAuthentication(string userId, bool enable)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            if (user.TwoFactorEnabled == true)
+            {
+                var twoFactorResponse = await _user.GenerateEnableTwoFactorOTPAsync(user);
+                if (twoFactorResponse.Response != null)
+                {
+                    var token = twoFactorResponse.Response.Token;
+                    await _userManager.UpdateAsync(user);
+                    var message = new Message(new string[] { user.Email! }, "XÁC MINH 2 BƯỚC", $"Mã OTP của bạn là: {token}");
+                    _emailService.SendEmail(message);
+                }
+            }
+            else
+            {
+                return BadRequest(new { Message = "Yêu cầu không thành công! Tài khoản của bạn chưa được bật xác thực hai yếu tố" });
+            }
+            return Ok(new { Message = $"Bạn đang yêu cầu được tắt 2 yếu tố xác thực. Vui lòng kiểm tra email: {user.Email} của bạn để nhận mã OTP." });
+        }
+
+
+        [HttpPost("confirm-2fa")]
+        public async Task<IActionResult> ConfirmTwoFactorAuthentication(string userId, string otpCode)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Xác nhận mã OTP
+            if (user.OTPEnableTwoFactor == otpCode)
+            {
+                user.TwoFactorEnabled = !user.TwoFactorEnabled;
+
+                user.OTPEnableTwoFactor = null;
+                await _userManager.UpdateAsync(user);
+
+                return Ok(new { Message = "Xác thực hai yếu tố đã được cập nhật." });
+            }
+            else
+            {
+                return BadRequest(new { Message = "Mã OTP không hợp lệ." });
+            }
+        }
+
+
+
+        #endregion
     }
 }

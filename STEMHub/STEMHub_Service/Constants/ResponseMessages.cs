@@ -2,6 +2,6 @@
 {
     public static class ResponseMessages
     {
-        public static string GetEmailSuccessMessage(string emailAddress) => $"Email đã gửi thành công đến {emailAddress}";
+        public static string GetEmailSuccessMessage(string emailAddress) => $"Vui lòng kiểm tra email {emailAddress}.";
     }
 }

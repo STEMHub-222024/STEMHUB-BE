@@ -110,6 +110,7 @@ builder.Services.AddScoped<ICrudRepository<Topic>, CrudRepository<Topic>>();
 builder.Services.AddScoped<ICrudRepository<Video>, CrudRepository<Video>>();
 builder.Services.AddScoped<ICrudRepository<ApplicationUser>, CrudRepository<ApplicationUser>>();
 builder.Services.AddScoped<ICrudUserRepository<IdentityUser>, CrudUserRepository<IdentityUser>>();
+builder.Services.AddScoped<ICrudUserRepository<Ingredients>, CrudUserRepository<Ingredients>>();
 
 builder.Services.AddScoped<UnitOfWork>();
 

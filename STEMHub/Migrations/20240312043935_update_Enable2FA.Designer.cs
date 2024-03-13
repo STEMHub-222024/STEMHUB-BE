@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using STEMHub.STEMHub_Data.Data;
 
@@ -11,9 +12,10 @@ using STEMHub.STEMHub_Data.Data;
 namespace STEMHub.Migrations
 {
     [DbContext(typeof(STEMHubDbContext))]
-    partial class STEMHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240312043935_update_Enable2FA")]
+    partial class update_Enable2FA
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,14 +53,14 @@ namespace STEMHub.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "0d6db2c3-a0e7-4c71-b1cf-76455713bd32",
+                            Id = "5367a4ad-0ced-4d60-bbca-e331e15fd6bf",
                             ConcurrencyStamp = "1",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = "05897726-a55e-4543-a91f-12608d08c378",
+                            Id = "1b1ae2f0-724c-402b-a788-e8aa97dff3c7",
                             ConcurrencyStamp = "2",
                             Name = "User",
                             NormalizedName = "User"
@@ -315,25 +317,6 @@ namespace STEMHub.Migrations
                     b.ToTable("Comment");
                 });
 
-            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Ingredients", b =>
-                {
-                    b.Property<Guid>("IngredientsId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("IngredientsName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("TopicId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("IngredientsId");
-
-                    b.HasIndex("TopicId");
-
-                    b.ToTable("Ingredients");
-                });
-
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Lesson", b =>
                 {
                     b.Property<Guid>("LessonId")
@@ -398,9 +381,6 @@ namespace STEMHub.Migrations
                     b.Property<Guid>("TopicId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("STEMId")
                         .HasColumnType("uniqueidentifier");
@@ -514,17 +494,6 @@ namespace STEMHub.Migrations
                     b.Navigation("Lesson");
                 });
 
-            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Ingredients", b =>
-                {
-                    b.HasOne("STEMHub.STEMHub_Data.Entities.Topic", "Topic")
-                        .WithMany("Ingredients")
-                        .HasForeignKey("TopicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Topic");
-                });
-
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Lesson", b =>
                 {
                     b.HasOne("STEMHub.STEMHub_Data.Entities.Topic", "Topic")
@@ -588,8 +557,6 @@ namespace STEMHub.Migrations
 
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Topic", b =>
                 {
-                    b.Navigation("Ingredients");
-
                     b.Navigation("Lessons");
                 });
 #pragma warning restore 612, 618

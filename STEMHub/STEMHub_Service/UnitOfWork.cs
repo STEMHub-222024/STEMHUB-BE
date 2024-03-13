@@ -12,6 +12,7 @@ namespace STEMHub.STEMHub_Service
         public IMapper Mapper { get; }
 
         public ICrudRepository<Banner> BannerRepository { get; set; } = null!;
+        public ICrudRepository<Ingredients> IngredientsRepository { get; set; } = null!;
         public ICrudRepository<Comment> CommentRepository { get; set; } = null!;
         public ICrudRepository<Lesson> LessonRepository { get; set; } = null!;
         public ICrudRepository<NewspaperArticle> NewspaperArticleRepository { get; set; } = null!;
@@ -38,6 +39,7 @@ namespace STEMHub.STEMHub_Service
             TopicRepository = new CrudRepository<Topic>(_context, mapper);
             VideoRepository = new CrudRepository<Video>(_context, mapper);
             ApplicationUserRepository = new CrudRepository<ApplicationUser>(_context, mapper);
+            IngredientsRepository = new CrudRepository<Ingredients>(_context, mapper);
             ApplicationUserRepository_UD = new CrudUserRepository<ApplicationUser>(_context, mapper);
         }
 
