@@ -4,18 +4,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using STEMHub.STEMHub_Data.Data;
-using STEMHub.STEMHub_Service.Interfaces;
-using STEMHub.STEMHub_Service.Services.Email;
+using STEMHub.STEMHub_Services.Interfaces;
+using STEMHub.STEMHub_Services.Services.Email;
 using System.Text;
-using STEMHub.STEMHub_Service.Services.UserManagement;
+using STEMHub.STEMHub_Services.Services.UserManagement;
 using Microsoft.OpenApi.Models;
 using System.Diagnostics.Metrics;
 using System.Reflection;
 using STEMHub.STEMHub_Data.Entities;
-using STEMHub.STEMHub_Service.Repository;
-using STEMHub.STEMHub_Service;
-using STEMHub.STEMHub_Service.DTO;
-using STEMHub.STEMHub_Service.Services;
+using STEMHub.STEMHub_Services.Repository;
+using STEMHub.STEMHub_Services;
+using STEMHub.STEMHub_Services.Services;
+using STEMHub.STEMHub_Data.DTO;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add database
@@ -53,7 +53,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 {
     // Set the expiration time for the OTP
-    options.TokenLifespan = TimeSpan.FromMinutes(5); // Adjust the time span as needed
+    options.TokenLifespan = TimeSpan.FromMinutes(1); // Adjust the time span as needed
 });
 
 

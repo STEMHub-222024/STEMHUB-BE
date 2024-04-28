@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using STEMHub.STEMHub_Data.Entities;
-using STEMHub.STEMHub_Service.Constants;
-using STEMHub.STEMHub_Service.DTO;
-using STEMHub.STEMHub_Service;
+using STEMHub.STEMHub_Services.Constants;
+using STEMHub.STEMHub_Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using STEMHub.STEMHub_Data.Data;
-using STEMHub.STEMHub_Service.Interfaces;
-using STEMHub.STEMHub_Service.Services;
+using STEMHub.STEMHub_Services.Interfaces;
+using STEMHub.STEMHub_Services.Services;
+using STEMHub.STEMHub_Data.DTO;
 
 namespace STEMHub.STEMHub_API.Controllers
 {

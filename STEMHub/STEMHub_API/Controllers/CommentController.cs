@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using STEMHub.STEMHub_Data.Entities;
-using STEMHub.STEMHub_Service.Constants;
-using STEMHub.STEMHub_Service.DTO;
-using STEMHub.STEMHub_Service;
+using STEMHub.STEMHub_Services.Constants;
+using STEMHub.STEMHub_Services;
+using STEMHub.STEMHub_Data.DTO;
 
 namespace STEMHub.STEMHub_API.Controllers
 {

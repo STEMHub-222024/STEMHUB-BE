@@ -7,7 +7,7 @@ namespace STEMHub.STEMHub_Data.Entities
         public Guid IngredientsId { get; set; }
         public string? IngredientsName { get; set; }
 
-        public Topic Topic { get; set; }
+        public Topic? Topic { get; set; }
         [ForeignKey("TopicId")]
         public Guid TopicId { get; set; }
     }

@@ -9,7 +9,7 @@ namespace STEMHub.STEMHub_Data.Entities
         public string? Content_C { get; set; }
         public int Rate { get; set; }
 
-        public Lesson Lesson { get; set; }
+        public Lesson? Lesson { get; set; }
         [ForeignKey("LessonId")]
         public Guid LessonId { get; set;}
 

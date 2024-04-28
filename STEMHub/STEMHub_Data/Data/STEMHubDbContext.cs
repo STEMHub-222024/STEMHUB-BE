@@ -9,7 +9,7 @@ namespace STEMHub.STEMHub_Data.Data
     {
         public STEMHubDbContext(DbContextOptions<STEMHubDbContext> options) : base(options)
         {
-
+           
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

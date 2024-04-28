@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using STEMHub.STEMHub_Data.Entities;
-using STEMHub.STEMHub_Service.Constants;
-using STEMHub.STEMHub_Service.DTO;
-using STEMHub.STEMHub_Service;
+using STEMHub.STEMHub_Services.Constants;
+using STEMHub.STEMHub_Services;
+using Microsoft.IdentityModel.Tokens;
+using STEMHub.STEMHub_Data.DTO;
 
 namespace STEMHub.STEMHub_API.Controllers
 {
@@ -20,14 +20,27 @@ namespace STEMHub.STEMHub_API.Controllers
         public async Task<IActionResult> GetAllBanner()
         {
             var banner = await _unitOfWork.BannerRepository.GetAllAsync<BannerDto>();
+            if (!banner.Any())
+            {
+                return StatusCode(StatusCodes.Status404NotFound,
+                    new Response { Status = "Thất bại", Message = "Danh sách Banner hiện đang đang trống", IsSuccess = false});
+            }
+
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            if (banner == null)
+            {
+                return StatusCode(StatusCodes.Status404NotFound,
+                    new Response
+                        { Status = "Thất bại", Message = "Danh sách Banner không tồn tại", IsSuccess = false });
+            }
+
             return Ok(banner);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBanner(Guid id)
         {
-            var banner =await _unitOfWork.BannerRepository.GetByIdAsync<BannerDto>(id);
-
+            var banner = await _unitOfWork.BannerRepository.GetByIdAsync<BannerDto>(id);
             if (banner == null)
                 return StatusCode(StatusCodes.Status404NotFound,
                     new Response { Status = "Thất bại", Message = "ID không tồn tại. Vui lòng kiểm tra lại" });
@@ -40,9 +53,32 @@ namespace STEMHub.STEMHub_API.Controllers
         {
             try
             {
-                if (bannerModel == null)
+                if (bannerModel != null)
+                {
+                    // IsNullOrEmpty kiểm tra null or rỗng
+                    if (string.IsNullOrEmpty(bannerModel.Image))
+                    {
+                        return StatusCode(StatusCodes.Status400BadRequest,
+                            new Response { Status = "Thất bại", Message = "Hình ảnh không thể bỏ trống!"});
+                    }
+
+                    if (string.IsNullOrEmpty(bannerModel.Title))
+                    {
+                        return StatusCode(StatusCodes.Status400BadRequest,
+                            new Response { Status = "Thất bại", Message = "Tiêu đề không được bỏ trống!" });
+                    }
+
+                    if(string.IsNullOrEmpty(bannerModel.Content)) 
+                    {
+                        return StatusCode(StatusCodes.Status400BadRequest,
+                            new Response { Status = "Thất bại", Message = "Nội dung không được bỏ trống!" });
+                    }
+                }
+                else
+                {
                     return StatusCode(StatusCodes.Status400BadRequest,
                         new Response { Status = "Thất bại", Message = "Gửi request thất bại!" });
+                }
 
                 var bannerEntity = _unitOfWork.Mapper.Map<Banner>(bannerModel);
                 if (bannerEntity != null)
@@ -65,25 +101,57 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBanner(Guid id, BannerDto updatedBannerModel)
+        public async Task<IActionResult> UpdateBanner(Guid id, BannerDto? updatedBannerModel)
         {
             try
             {
                 var existingBannerEntity = await _unitOfWork.BannerRepository.GetByIdAsync<Banner>(id);
 
-                if (existingBannerEntity == null)
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+                if (existingBannerEntity != null && updatedBannerModel != null)
+                {
+                    if (!string.IsNullOrEmpty(updatedBannerModel.Title))
+                    {
+                        existingBannerEntity.Title = updatedBannerModel.Title;
+                    }
+                    else
+                    {
+                        return StatusCode(StatusCodes.Status400BadRequest,
+                            new Response { Status = "Thất bại", Message = "Tiêu đề không thể bỏ trống!" });
+                    }
+
+                    if (!string.IsNullOrEmpty(updatedBannerModel.Content))
+                    {
+                        existingBannerEntity.Content = updatedBannerModel.Content;
+                    }
+                    else 
+                    {
+                        return StatusCode(StatusCodes.Status400BadRequest,
+                            new Response { Status = "Thất bại", Message = "Nội dung không được bỏ trống!" });
+                    }
+
+                    if (!string.IsNullOrEmpty(updatedBannerModel.Image))
+                    {
+                        existingBannerEntity.Image = updatedBannerModel.Image;
+
+                    }
+                    else
+                    {
+                        return StatusCode(StatusCodes.Status400BadRequest,
+                            new Response { Status = "Thất bại", Message = "Hình ảnh không được bỏ trống!" });
+                    }
+                }
+                else
+                {
                     return StatusCode(StatusCodes.Status404NotFound,
                         new Response { Status = "Thất bại", Message = "ID không tồn tại. Vui lòng kiểm tra lại" });
-
-                existingBannerEntity.Title = updatedBannerModel.Title;
-                existingBannerEntity.Content = updatedBannerModel.Content;
-                existingBannerEntity.Image = updatedBannerModel.Image;
+                }
 
                 await _unitOfWork.BannerRepository.UpdateAsync(existingBannerEntity);
 
                 await _unitOfWork.CommitAsync();
 
-                return Ok(new { message = "Cập nhật thành công" });
+                return Ok(existingBannerEntity);
             }
             catch (Exception e)
             {

@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="STEMHub_Servicess\**" />
+    <Content Remove="STEMHub_Servicess\**" />
+    <EmbeddedResource Remove="STEMHub_Servicess\**" />
+    <None Remove="STEMHub_Servicess\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.26" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.26" />

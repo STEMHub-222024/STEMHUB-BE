@@ -15,7 +15,7 @@ namespace STEMHub.STEMHub_Data.Entities
         public string? HtmlContent { get; set; }
 
 
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
         [ForeignKey("UserId")]
         public virtual ApplicationUser ApplicationUser { get; set; }
     }

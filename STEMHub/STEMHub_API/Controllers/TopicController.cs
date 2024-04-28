@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using STEMHub.STEMHub_Data.Data;
+using STEMHub.STEMHub_Data.DTO;
 using STEMHub.STEMHub_Data.Entities;
-using STEMHub.STEMHub_Service;
-using STEMHub.STEMHub_Service.Constants;
-using STEMHub.STEMHub_Service.DTO;
-using STEMHub.STEMHub_Service.Interfaces;
+using STEMHub.STEMHub_Services;
+using STEMHub.STEMHub_Services.Constants;
+using STEMHub.STEMHub_Services.Interfaces;
 using System.Text.Json;
 
 namespace STEMHub.STEMHub_API.Controllers

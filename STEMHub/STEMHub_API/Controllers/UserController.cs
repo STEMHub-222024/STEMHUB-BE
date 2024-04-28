@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using STEMHub.STEMHub_Data.Data;
-using STEMHub.STEMHub_Service;
-using STEMHub.STEMHub_Service.Authentication.Login;
-using STEMHub.STEMHub_Service.Constants;
-using STEMHub.STEMHub_Service.DTO;
-using STEMHub.STEMHub_Service.Interfaces;
+using STEMHub.STEMHub_Data.DTO;
+using STEMHub.STEMHub_Services;
+using STEMHub.STEMHub_Services.Authentication.Login;
+using STEMHub.STEMHub_Services.Constants;
+using STEMHub.STEMHub_Services.Interfaces;
 using System.Web;
 
 namespace STEMHub.STEMHub_API.Controllers
@@ -107,10 +107,13 @@ namespace STEMHub.STEMHub_API.Controllers
             user.ResetTokenExpires = DateTime.UtcNow.AddMinutes(5);
             await _userManager.UpdateAsync(user);
 
-            var message = new Message(new string[] { user.Email! }, "Đặt lại mật khẩu OTP", $"{token}");
+            var resetUrl = $"http://localhost:3000/forgotPassword?token={Uri.EscapeDataString(token)}";
+            var emailContent = $"<p>Vui lòng <a href='{resetUrl}'>nhấp vào đây</a> để đặt lại mật khẩu của bạn.</p>";
+
+            var message = new Message(new string[] { user.Email! }, "Đặt lại mật khẩu", emailContent);
             _emailService.SendEmail(message);
 
-            return Ok($"OTP được gửi tới {model.Email} thành công! Vui lòng kiểm tra lại email.");
+            return Ok($"Link đặt lại mật khẩu đã được gửi tới {model.Email} thành công! Vui lòng kiểm tra lại email.");
 
         }
 

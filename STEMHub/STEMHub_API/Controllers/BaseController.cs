@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using STEMHub.STEMHub_Service;
+using STEMHub.STEMHub_Services;
 
 namespace STEMHub.STEMHub_API.Controllers
 {

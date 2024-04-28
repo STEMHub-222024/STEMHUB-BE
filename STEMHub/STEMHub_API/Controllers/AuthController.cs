@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using STEMHub.STEMHub_Data.Data;
-using STEMHub.STEMHub_Service;
-using STEMHub.STEMHub_Service.Authentication.Login;
-using STEMHub.STEMHub_Service.Authentication.SignUp;
-using STEMHub.STEMHub_Service.Authentication.TwoFactor;
-using STEMHub.STEMHub_Service.Authentication.User;
-using STEMHub.STEMHub_Service.Constants;
-using STEMHub.STEMHub_Service.Interfaces;
+using STEMHub.STEMHub_Services.Authentication.Login;
+using STEMHub.STEMHub_Services.Authentication.SignUp;
+using STEMHub.STEMHub_Services.Authentication.User;
+using STEMHub.STEMHub_Services.Constants;
+using STEMHub.STEMHub_Services.Interfaces;
+using System.Security.Claims;
 
 namespace STEMHub.STEMHub_API.Controllers
 {
@@ -73,15 +71,17 @@ namespace STEMHub.STEMHub_API.Controllers
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] Login loginModel)
         {
-            var userEmail = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginModel.Username);
-            if (userEmail == null)
+           
+            var userByName = await _userManager.FindByNameAsync(loginModel.Username);
+            if (userByName == null)
             {
                 return StatusCode(StatusCodes.Status404NotFound,
-                    new Response {Status = "Thất bại", Message = $"Người dùng {loginModel.Username} không tồn tại." });
+                    new Response { Status = "Thất bại", Message = $"Người dùng {loginModel.Username} không tồn tại." });
             }
+               
 
             var passwordHasher = new PasswordHasher<ApplicationUser>();
-            var passwordVerificationResult = passwordHasher.VerifyHashedPassword(userEmail, userEmail.PasswordHash, loginModel.Password);
+            var passwordVerificationResult = passwordHasher.VerifyHashedPassword(userByName, userByName.PasswordHash, loginModel.Password);
 
             if (passwordVerificationResult != PasswordVerificationResult.Success)
             {
@@ -102,13 +102,24 @@ namespace STEMHub.STEMHub_API.Controllers
                     return StatusCode(StatusCodes.Status200OK,
                         new Response { IsSuccess = loginOtpResponse.IsSuccess, Status = "Thành công", Message = $"Chúng tôi đã gửi OPT đến {user.Email}. Vui lòng kiểm tra!" });
                 }
+
                 if (user != null && await _userManager.CheckPasswordAsync(user, loginModel.Password))
                 {
                     var serviceResponse = await _user.GetJwtTokenAsync(user);
+                    var cookieOptions = new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = false,
+                        SameSite = SameSiteMode.Strict
+                    };
+
+                    cookieOptions.Expires = DateTime.Now.AddHours(5);
+                    Response.Cookies.Append("cookie_token", serviceResponse.Response.AccessToken.Token, cookieOptions);
                     return Ok(serviceResponse);
 
                 }
             }
+
             return Unauthorized();
         }
 
@@ -124,6 +135,27 @@ namespace STEMHub.STEMHub_API.Controllers
             }
             return StatusCode(StatusCodes.Status404NotFound,
                 new Response { Status = "Thành công", Message = $"Mã không hợp lệ" });
+        }
+
+        [HttpGet("info")]
+        public async Task<IActionResult> GetUserInfo()
+        {
+            var user = HttpContext.User;
+
+            var userId = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var FirtsName = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value;
+            var LastName = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value;
+            var role = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            var username = user.Identity!.Name;
+
+            return Ok(new
+            {
+                UserId = userId,
+                Username = username,
+                FirtsName = FirtsName,
+                LastName = LastName,
+                Role = role,
+            });
         }
 
         [HttpPost]
@@ -222,9 +254,6 @@ namespace STEMHub.STEMHub_API.Controllers
                 return BadRequest(new { Message = "Mã OTP không hợp lệ." });
             }
         }
-
-
-
         #endregion
     }
 }
