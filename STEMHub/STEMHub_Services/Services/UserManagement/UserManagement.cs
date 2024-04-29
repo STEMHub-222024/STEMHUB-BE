@@ -144,8 +144,11 @@ namespace STEMHub.STEMHub_Services.Services.UserManagement
                     new Claim(ClaimTypes.NameIdentifier, user.Id),
                     new Claim(ClaimTypes.GivenName, user.FirstName !),
                     new Claim(ClaimTypes.Surname, user.LastName !),
+                    user.Email != null ? new Claim(ClaimTypes.Email, user.Email) : null,
+                    user.Image != null ? new Claim("Image", user.Image) : null,
+                    user.Address != null ? new Claim("Address", user.Address) : null,
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                };
+                }.Where(c => c != null).ToList(); ;
 
             var userRoles = await _userManager.GetRolesAsync(user);
             foreach (var role in userRoles)
@@ -220,7 +223,7 @@ namespace STEMHub.STEMHub_Services.Services.UserManagement
 
                     IsSuccess = false,
                     StatusCode = 400,
-                    Message = $"Token không hợp lệ hoặc hết hạn"
+                    Message = "Token không hợp lệ hoặc hết hạn"
                 };
             }
             var response = await GetJwtTokenAsync(user);

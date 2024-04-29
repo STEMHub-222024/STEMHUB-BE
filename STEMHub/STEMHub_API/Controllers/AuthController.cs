@@ -146,6 +146,9 @@ namespace STEMHub.STEMHub_API.Controllers
             var FirtsName = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value;
             var LastName = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value;
             var role = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            var email = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var Address = user.Claims.FirstOrDefault(c => c.Type == "Address")?.Value;
+            var Image = user.Claims.FirstOrDefault(c => c.Type == "Address")?.Value;
             var username = user.Identity!.Name;
 
             return Ok(new
@@ -154,6 +157,9 @@ namespace STEMHub.STEMHub_API.Controllers
                 Username = username,
                 FirtsName = FirtsName,
                 LastName = LastName,
+                Email = email,
+                Image = Image,
+                Address = Address,
                 Role = role,
             });
         }
