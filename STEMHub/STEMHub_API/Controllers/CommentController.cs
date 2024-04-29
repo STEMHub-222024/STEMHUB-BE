@@ -3,6 +3,8 @@ using STEMHub.STEMHub_Data.Entities;
 using STEMHub.STEMHub_Services.Constants;
 using STEMHub.STEMHub_Services;
 using STEMHub.STEMHub_Data.DTO;
+using STEMHub.STEMHub_Services.Interfaces;
+using STEMHub.STEMHub_Services.Repository;
 
 namespace STEMHub.STEMHub_API.Controllers
 {
@@ -10,16 +12,22 @@ namespace STEMHub.STEMHub_API.Controllers
     [ApiController]
     public class CommentController : BaseController
     {
-        public CommentController(UnitOfWork unitOfWork) : base(unitOfWork)
+        private readonly IGetAllCommentByLessonId _igetAllCommentByLessonId;
+        public CommentController(UnitOfWork unitOfWork, IGetAllCommentByLessonId igetAllCommentByLessonId) : base(unitOfWork)
         {
-
+            _igetAllCommentByLessonId = igetAllCommentByLessonId;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllComment()
+        public async Task<IActionResult> GetAllComment(Guid lessonId)
         {
-            var comment = await _unitOfWork.CommentRepository.GetAllAsync<CommentDto>();
-            return Ok(comment);
+            var comments = await _unitOfWork.GetAllCommentByLessonId.GetAllCommentByLessonID(lessonId);
+
+            if (comments == null || !comments.Any())
+            {
+                return NotFound("Không tìm thấy bình luận nào cho bài học này.");
+            }
+            return Ok(comments);
         }
 
         [HttpGet("{id}")]

@@ -21,7 +21,7 @@ namespace STEMHub.STEMHub_Services
         public ICrudRepository<Video> VideoRepository { get; set; } = null!;
         public ICrudRepository<ApplicationUser> ApplicationUserRepository { get; set; }
         public ICrudUserRepository<ApplicationUser> ApplicationUserRepository_UD { get; set; }
-
+        public IGetAllCommentByLessonId GetAllCommentByLessonId { get; set; }
         public UnitOfWork(STEMHubDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -41,6 +41,7 @@ namespace STEMHub.STEMHub_Services
             ApplicationUserRepository = new CrudRepository<ApplicationUser>(_context, mapper);
             IngredientsRepository = new CrudRepository<Ingredients>(_context, mapper);
             ApplicationUserRepository_UD = new CrudUserRepository<ApplicationUser>(_context, mapper);
+            GetAllCommentByLessonId = new GetAllCommentByLessonId(_context);
         }
 
         public void Commit()
