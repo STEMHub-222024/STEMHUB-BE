@@ -40,6 +40,17 @@ namespace STEMHub.STEMHub_API.Controllers
             return Ok(user);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetByIdUser(string id)
+        {
+            var user = await _unitOfWork.ApplicationUserRepository_UD.GetByIdUserAsync<UserDto>(id);
+
+            if (user == null)
+                return StatusCode(StatusCodes.Status404NotFound,
+                    new Response { Status = "Thất bại", Message = "ID không tồn tại. Vui lòng kiểm tra lại" });
+
+            return Ok(user);
+        }
         
 
         [HttpPut("{id}")]

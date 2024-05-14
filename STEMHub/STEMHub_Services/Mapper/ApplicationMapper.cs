@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using STEMHub.STEMHub_Data.Data;
 using STEMHub.STEMHub_Data.Entities;
 using STEMHub.STEMHub_Data.DTO;
 
@@ -16,6 +17,7 @@ namespace STEMHub.STEMHub_Services.Mapper
             CreateMap<Topic, TopicDto>().ReverseMap();
             CreateMap<Video, VideoDto>().ReverseMap();
             CreateMap<Ingredients, IngredientsDto>().ReverseMap();
+            CreateMap<ApplicationUser, UserDto>().ReverseMap();
         }
     }
 }
