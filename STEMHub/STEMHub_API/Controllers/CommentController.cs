@@ -5,6 +5,8 @@ using STEMHub.STEMHub_Services;
 using STEMHub.STEMHub_Data.DTO;
 using STEMHub.STEMHub_Services.Interfaces;
 using STEMHub.STEMHub_Services.Repository;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace STEMHub.STEMHub_API.Controllers
 {
@@ -13,9 +15,12 @@ namespace STEMHub.STEMHub_API.Controllers
     public class CommentController : BaseController
     {
         private readonly IGetAllCommentByLessonId _igetAllCommentByLessonId;
-        public CommentController(UnitOfWork unitOfWork, IGetAllCommentByLessonId igetAllCommentByLessonId) : base(unitOfWork)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public CommentController(UnitOfWork unitOfWork, IGetAllCommentByLessonId igetAllCommentByLessonId, IHttpContextAccessor httpContextAccessor) : base(unitOfWork)
         {
             _igetAllCommentByLessonId = igetAllCommentByLessonId;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet]
@@ -108,12 +113,21 @@ namespace STEMHub.STEMHub_API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComment(Guid id)
         {
-            var commentEntity = _unitOfWork.CommentRepository.GetByIdAsync<CommentDto>(id);
+            var commentEntity = await _unitOfWork.CommentRepository.GetByIdAsync<Comment>(id);
 
             if (commentEntity == null)
+            {
                 return NotFound();
+            }
 
-            await _unitOfWork.CommentRepository.DeleteAsync(id);
+            var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (commentEntity.UserId != userId)
+            {
+                return Forbid();
+            }
+
+            await _unitOfWork.CommentRepository.DeleteAsync(commentEntity.CommentId);
             await _unitOfWork.CommitAsync();
 
             return Ok(new { message = "Xóa thành công" });
