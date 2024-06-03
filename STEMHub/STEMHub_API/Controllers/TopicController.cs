@@ -85,6 +85,7 @@ namespace STEMHub.STEMHub_API.Controllers
                         new Response { Status = "Thất bại", Message = "ID không tồn tại. Vui lòng kiểm tra lại" });
 
                 existingTopicEntity.TopicName = updatedTopicModel.TopicName;
+                existingTopicEntity.VideoReview = updatedTopicModel.VideoReview;
                 existingTopicEntity.TopicImage = updatedTopicModel.TopicImage;
                 existingTopicEntity.Description = updatedTopicModel.Description;
 
