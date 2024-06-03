@@ -77,6 +77,7 @@ namespace STEMHub.STEMHub_API.Controllers
                         new Response { Status = "Thất bại", Message = "ID không tồn tại. Vui lòng kiểm tra lại" });
 
                 existingVideoEntity.VideoTitle = updatedVideoModel.VideoTitle;
+                existingVideoEntity.Description = updatedVideoModel.Description;
                 existingVideoEntity.Path = updatedVideoModel.Path;
 
                 await _unitOfWork.VideoRepository.UpdateAsync(existingVideoEntity);

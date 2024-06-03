@@ -16,6 +16,7 @@ using STEMHub.STEMHub_Services.Repository;
 using STEMHub.STEMHub_Services;
 using STEMHub.STEMHub_Services.Services;
 using STEMHub.STEMHub_Data.DTO;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add database
@@ -144,6 +145,17 @@ builder.Services.AddSwaggerGen(option =>
             new string[]{}
         }
     });
+});
+
+// image
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 200 * 1024 * 1024;
+});
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 200 * 1024 * 1024;
 });
 var app = builder.Build();
 
