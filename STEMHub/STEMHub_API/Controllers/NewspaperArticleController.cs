@@ -88,6 +88,7 @@ namespace STEMHub.STEMHub_API.Controllers
 
                 existingNewspaperArticleEntity.Title = updatedNewspaperArticleModel.Title;
                 existingNewspaperArticleEntity.Image = updatedNewspaperArticleModel.Image;
+                existingNewspaperArticleEntity.Description = updatedNewspaperArticleModel.Description;
                 existingNewspaperArticleEntity.Markdown = updatedNewspaperArticleModel.Markdown;
                 existingNewspaperArticleEntity.HtmlContent = updatedNewspaperArticleModel.HtmlContent;
                 
