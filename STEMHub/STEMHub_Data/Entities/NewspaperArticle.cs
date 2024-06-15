@@ -10,6 +10,7 @@ namespace STEMHub.STEMHub_Data.Entities
         public Guid NewspaperArticleId { get; set; }
         public string? Title { get; set; }
         public string? Image { get; set; }
+        public string? Description { get; set; }
         public string? Markdown { get; set; }
 
         [DataType(DataType.MultilineText)]
