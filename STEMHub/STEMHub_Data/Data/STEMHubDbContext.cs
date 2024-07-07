@@ -16,13 +16,6 @@ namespace STEMHub.STEMHub_Data.Data
         {
             base.OnModelCreating(builder);
             SeedRoles(builder);
-
-
-            builder.Entity<Lesson>()
-                .HasOne(e => e.Video)
-                .WithOne(e => e.Lesson)
-                .HasForeignKey<Video>(e => e.LessonId)
-                .IsRequired(false);
         }
 
 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using STEMHub.STEMHub_Data.Data;
 
@@ -11,9 +12,10 @@ using STEMHub.STEMHub_Data.Data;
 namespace STEMHub.Migrations
 {
     [DbContext(typeof(STEMHubDbContext))]
-    partial class STEMHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240616162159_update_table_video")]
+    partial class update_table_video
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,14 +53,14 @@ namespace STEMHub.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "4f56c400-7ea2-44cd-b4e9-ca84678380a1",
+                            Id = "8809d0f3-2b33-43a3-b1fe-86406b0cbb10",
                             ConcurrencyStamp = "1",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = "796fd124-8992-4d1e-8daf-18f6f2a454a9",
+                            Id = "bdf99a0b-335e-4f60-a81a-259b5b094b0b",
                             ConcurrencyStamp = "2",
                             Name = "User",
                             NormalizedName = "User"
@@ -452,7 +454,8 @@ namespace STEMHub.Migrations
 
                     b.HasKey("VideoId");
 
-                    b.HasIndex("LessonId");
+                    b.HasIndex("LessonId")
+                        .IsUnique();
 
                     b.ToTable("Video");
                 });
@@ -572,10 +575,8 @@ namespace STEMHub.Migrations
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Video", b =>
                 {
                     b.HasOne("STEMHub.STEMHub_Data.Entities.Lesson", "Lesson")
-                        .WithMany("Videos")
-                        .HasForeignKey("LessonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithOne("Video")
+                        .HasForeignKey("STEMHub.STEMHub_Data.Entities.Video", "LessonId");
 
                     b.Navigation("Lesson");
                 });
@@ -591,7 +592,7 @@ namespace STEMHub.Migrations
                 {
                     b.Navigation("Comment");
 
-                    b.Navigation("Videos");
+                    b.Navigation("Video");
                 });
 
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.STEM", b =>

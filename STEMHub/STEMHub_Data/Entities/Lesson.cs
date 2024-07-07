@@ -12,6 +12,6 @@ namespace STEMHub.STEMHub_Data.Entities
         [ForeignKey("TopicId")]
         public Guid TopicId { get; set; }
 
-        public Video? Video { get; set; }
+        public ICollection<Video> Videos { get; set; } = new List<Video>();
     }
 }

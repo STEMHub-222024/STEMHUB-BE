@@ -24,22 +24,12 @@ builder.Services.AddDbContext<STEMHubDbContext>(options => options.UseSqlServer(
 // Add access
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowOrigin", builder =>
+    options.AddPolicy("AllowAll", builder =>
     {
         builder
-            .WithOrigins("http://localhost:3000")
+            .WithOrigins("*")
             .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowOrigin", builder =>
-    {
-        builder
-            .WithOrigins("http://localhost:3000")
-            .AllowAnyHeader()
+            .SetIsOriginAllowedToAllowWildcardSubdomains()
             .AllowAnyMethod();
     });
 });
@@ -168,7 +158,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowOrigin");
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 
