@@ -117,8 +117,8 @@ namespace STEMHub.STEMHub_API.Controllers
             user.PasswordResetToken = token;
             user.ResetTokenExpires = DateTime.UtcNow.AddHours(1);
             await _userManager.UpdateAsync(user);
-
-            var resetUrl = $"http://localhost:3000/resetPassword?token={Uri.EscapeDataString(token)}&email={Uri.EscapeDataString(model.Email)}";
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var resetUrl = $"{baseUrl}/resetPassword?token={Uri.EscapeDataString(token)}&email={Uri.EscapeDataString(model.Email)}";
             var emailContent = $@"
                 <html>
                     <body style='font-family: Arial, sans-serif; color: #333333; max-width: 600px; margin: 0 auto;'>
