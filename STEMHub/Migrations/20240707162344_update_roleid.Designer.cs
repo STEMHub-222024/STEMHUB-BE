@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using STEMHub.STEMHub_Data.Data;
 
@@ -11,9 +12,10 @@ using STEMHub.STEMHub_Data.Data;
 namespace STEMHub.Migrations
 {
     [DbContext(typeof(STEMHubDbContext))]
-    partial class STEMHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240707162344_update_roleid")]
+    partial class update_roleid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -385,52 +387,6 @@ namespace STEMHub.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("NewspaperArticle");
-                });
-
-            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Owner", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Gmail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Introduction")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Owner");
-                });
-
-            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Scientist", b =>
-                {
-                    b.Property<Guid>("ScientistId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Adage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FullName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ScientistId");
-
-                    b.ToTable("Scientist");
                 });
 
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.STEM", b =>

@@ -26,13 +26,27 @@ namespace STEMHub.STEMHub_Data.Data
         public DbSet<NewspaperArticle> NewspaperArticle { get; set; }
         public DbSet<Topic> Topic { get; set; }
         public DbSet<Video> Video { get; set; }
+        public DbSet<Owner> Owner { get; set; }
+        public DbSet<Scientist> Scientist { get; set; }
 
         private static void SeedRoles(ModelBuilder builder)
         {
             builder.Entity<IdentityRole>().HasData
             (
-                new IdentityRole() { Name = "Admin", ConcurrencyStamp = "1", NormalizedName = "Admin" },
-                new IdentityRole() { Name = "User", ConcurrencyStamp = "2", NormalizedName = "User" }
+                new IdentityRole()
+                {
+                    Id = "d6941b2d-f5ae-4b88-afa2-0bfa7361d5aa",
+                    Name = "Admin",
+                    ConcurrencyStamp = "1",
+                    NormalizedName = "Admin"
+                },
+                new IdentityRole()
+                {
+                    Id = "17e91c5b-c0f3-4e32-8e94-6bdf56ec18d1",
+                    Name = "User",
+                    ConcurrencyStamp = "2",
+                    NormalizedName = "User"
+                }
             );
         }
 

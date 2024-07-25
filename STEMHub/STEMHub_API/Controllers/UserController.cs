@@ -115,11 +115,22 @@ namespace STEMHub.STEMHub_API.Controllers
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             user.PasswordResetToken = token;
-            user.ResetTokenExpires = DateTime.UtcNow.AddMinutes(5);
+            user.ResetTokenExpires = DateTime.UtcNow.AddHours(1);
             await _userManager.UpdateAsync(user);
 
-            var resetUrl = $"http://localhost:3000/forgotPassword?token={Uri.EscapeDataString(token)}";
-            var emailContent = $"<p>Vui lòng <a href='{resetUrl}'>nhấp vào đây</a> để đặt lại mật khẩu của bạn.</p>";
+            var resetUrl = $"http://localhost:3000/resetPassword?token={Uri.EscapeDataString(token)}&email={Uri.EscapeDataString(model.Email)}";
+            var emailContent = $@"
+                <html>
+                    <body style='font-family: Arial, sans-serif; color: #333333; max-width: 600px; margin: 0 auto;'>
+                        <p>Xin chào,</p>
+                        <p>Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản STEM của bạn. Vui lòng nhấp vào nút bên dưới để tiếp tục quá trình đặt lại mật khẩu:</p>
+                        <p style='text-align: center;'>
+                            <a href='{resetUrl}' style='background-color: #007bff; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 5px;'>Đặt lại mật khẩu</a>
+                        </p>
+                        <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>
+                        <p>Trân trọng,<br>Đội ngũ STEM</p>
+                    </body>
+                </html>";
 
             var message = new Message(new string[] { user.Email! }, "Đặt lại mật khẩu", emailContent);
             _emailService.SendEmail(message);

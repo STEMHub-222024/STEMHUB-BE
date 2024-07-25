@@ -7,12 +7,14 @@ namespace STEMHub.STEMHub_Services.Constants
         public List<MailboxAddress> To { get; set; }
         public string Subject { get; set; }
         public string Content { get; set; }
-        public Message(IEnumerable<string> to, string subject, string content)
+        public bool IsBodyHtml { get; set; }
+        public Message(IEnumerable<string> to, string subject, string content, bool isBodyHtml = true)
         {
             To = new List<MailboxAddress>();
             To.AddRange(to.Select(x => new MailboxAddress("", x)));
             Subject = subject;
             Content = content;
+            IsBodyHtml = isBodyHtml;
         }
     }
 }

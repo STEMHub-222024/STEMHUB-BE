@@ -11,6 +11,7 @@ using STEMHub.STEMHub_Services.Services.UserManagement;
 using Microsoft.OpenApi.Models;
 using System.Diagnostics.Metrics;
 using System.Reflection;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using STEMHub.STEMHub_Data.Entities;
 using STEMHub.STEMHub_Services.Repository;
 using STEMHub.STEMHub_Services;
@@ -27,10 +28,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", builder =>
     {
         builder
-            .WithOrigins("*")
+            .WithOrigins("https://stem-ui.vercel.app", "http://localhost:3000/")
             .AllowAnyHeader()
             .SetIsOriginAllowedToAllowWildcardSubdomains()
-            .AllowAnyMethod();
+            .WithMethods("POST", "GET", "PUT", "DELETE", "PATCH");
     });
 });
 
@@ -99,6 +100,8 @@ builder.Services.AddScoped<ICrudRepository<NewspaperArticle>, CrudRepository<New
 builder.Services.AddScoped<ICrudRepository<STEM>, CrudRepository<STEM>>();
 builder.Services.AddScoped<ICrudRepository<Topic>, CrudRepository<Topic>>();
 builder.Services.AddScoped<ICrudRepository<Video>, CrudRepository<Video>>();
+builder.Services.AddScoped<ICrudRepository<Owner>, CrudRepository<Owner>>();
+builder.Services.AddScoped<ICrudRepository<Scientist>, CrudRepository<Scientist>>();
 builder.Services.AddScoped<ICrudRepository<ApplicationUser>, CrudRepository<ApplicationUser>>();
 builder.Services.AddScoped<ICrudUserRepository<IdentityUser>, CrudUserRepository<IdentityUser>>();
 builder.Services.AddScoped<ICrudUserRepository<Ingredients>, CrudUserRepository<Ingredients>>();
