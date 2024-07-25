@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -28,13 +28,13 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", builder =>
     {
         builder
-            .WithOrigins("https://stem-ui.vercel.app", "http://localhost:3000/")
+            .WithOrigins("http://localhost:3000", "https://stem-ui.vercel.app")
             .AllowAnyHeader()
-            .SetIsOriginAllowedToAllowWildcardSubdomains()
-            .WithMethods("POST", "GET", "PUT", "DELETE", "PATCH");
+            .AllowAnyMethod()
+            .AllowCredentials()
+            .SetIsOriginAllowedToAllowWildcardSubdomains();
     });
 });
-
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     // Other identity options
