@@ -123,6 +123,36 @@ namespace STEMHub.STEMHub_API.Controllers
                         return StatusCode(StatusCodes.Status400BadRequest,
                             new Response { Status = "Thất bại", Message = "Châm ngôn không được bỏ trống!" });
                     }
+
+                    if (!string.IsNullOrEmpty(updatedScientistModel.DescriptionScientist))
+                    {
+                        existingScientistEntity.DescriptionScientist = updatedScientistModel.DescriptionScientist;
+                    }
+                    else
+                    {
+                        return StatusCode(StatusCodes.Status400BadRequest,
+                            new Response { Status = "Thất bại", Message = "Mô tả không thể bỏ trống!" });
+                    }
+
+                    if (!string.IsNullOrEmpty(updatedScientistModel.ContentMarkdown))
+                    {
+                        existingScientistEntity.ContentMarkdown = updatedScientistModel.ContentMarkdown;
+                    }
+                    else
+                    {
+                        return StatusCode(StatusCodes.Status400BadRequest,
+                            new Response { Status = "Thất bại", Message = "Content Markdown không thể bỏ trống!" });
+                    }
+
+                    if (!string.IsNullOrEmpty(updatedScientistModel.Content))
+                    {
+                        existingScientistEntity.Content = updatedScientistModel.Content;
+                    }
+                    else
+                    {
+                        return StatusCode(StatusCodes.Status400BadRequest,
+                            new Response { Status = "Thất bại", Message = "Nội dung không thể bỏ trống!" });
+                    }
                 }
                 else
                 {
