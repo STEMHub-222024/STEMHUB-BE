@@ -7,6 +7,8 @@
         public string? Image { get; set; }
         // Châm ngôn
         public string? Adage { get; set; }
+        public string? DescriptionScientist { get; set; }
+        public string? ContentMarkdown { get; set; }
         public string? Content { get; set; }
     }
 }
