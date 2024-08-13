@@ -28,7 +28,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", builder =>
     {
         builder
-            .WithOrigins("http://localhost:3000", "https://stem-ui.vercel.app")
+            .WithOrigins("https://steam.codefirst.id.vn", "http://localhost:3000", "https://stem-ui.vercel.app")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
