@@ -161,12 +161,12 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpGet("suggestions")]
-        public async Task<IActionResult> GetSuggestions(Guid stemId)
+        public async Task<IActionResult> GetSuggestions()
         {
             var suggestedTopics = await _context.Topic
                 .OrderByDescending(p => p.View)
-                .Where(p => p.View > 0 && p.STEMId == stemId)
-                .Take(8)
+                .Where(p => p.View > 0)
+                .Take(4)
                 .ToListAsync();
 
             var suggestedTopicDtos = suggestedTopics.Select(topic => new TopicDto

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using STEMHub.STEMHub_Data.Data;
+using STEMHub.STEMHub_Data.DTO;
 using STEMHub.STEMHub_Data.Entities;
 using STEMHub.STEMHub_Services.Interfaces;
 using STEMHub.STEMHub_Services.Repository;
@@ -24,6 +25,9 @@ namespace STEMHub.STEMHub_Services
         public ICrudRepository<ApplicationUser> ApplicationUserRepository { get; set; }
         public ICrudUserRepository<ApplicationUser> ApplicationUserRepository_UD { get; set; }
         public IGetAllCommentByLessonId GetAllCommentByLessonId { get; set; }
+        public ICrudRepository<Like> LikeRepository { get; set; }
+        public CommentRepository CCommentRepository { get; set; }
+
         public UnitOfWork(STEMHubDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -46,6 +50,8 @@ namespace STEMHub.STEMHub_Services
             IngredientsRepository = new CrudRepository<Ingredients>(_context, mapper);
             ApplicationUserRepository_UD = new CrudUserRepository<ApplicationUser>(_context, mapper);
             GetAllCommentByLessonId = new GetAllCommentByLessonId(_context);
+            LikeRepository = new CrudRepository<Like>(_context, mapper);
+            CCommentRepository = new CommentRepository(_context, mapper);
         }
 
         public void Commit()
@@ -70,6 +76,11 @@ namespace STEMHub.STEMHub_Services
             {
                 _context.Dispose();
             }
+        }
+
+        public async Task<IEnumerable<CommentDto>> GetCommentsByTypeAndIdAsync(CommentType type, Guid? lessonId, Guid? articleId)
+        {
+            return await CCommentRepository.GetCommentsByTypeAndIdAsync<CommentDto>(type, lessonId, articleId);
         }
     }
 }

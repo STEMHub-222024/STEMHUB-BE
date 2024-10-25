@@ -1,15 +1,17 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using STEMHub.STEMHub_Data.Data;
+using STEMHub.STEMHub_Data.Entities;
 using STEMHub.STEMHub_Services.Interfaces;
+using System;
 using System.Linq.Expressions;
 
 namespace STEMHub.STEMHub_Services.Repository
 {
     public class CrudRepository<T> : ICrudRepository<T> where T : class
     {
-        private readonly STEMHubDbContext _context;
-        private readonly IMapper _mapper;
+        protected readonly STEMHubDbContext _context;
+        protected readonly IMapper _mapper;
 
         public CrudRepository(STEMHubDbContext context, IMapper mapper)
         {
@@ -53,7 +55,7 @@ namespace STEMHub.STEMHub_Services.Repository
             }
         }
 
-        private TDto MapToDto<TDto>(T entity)
+        protected TDto MapToDto<TDto>(T entity)
         {
             return _mapper.Map<TDto>(entity)!;
         }
@@ -62,6 +64,11 @@ namespace STEMHub.STEMHub_Services.Repository
         {
             var entities = await _context.Set<T>().Where(predicate).ToListAsync();
             return entities.Select(entity => MapToDto<TDto>(entity));
+        }
+
+        public async Task<int> CountAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _context.Set<T>().CountAsync(predicate);
         }
     }
 }

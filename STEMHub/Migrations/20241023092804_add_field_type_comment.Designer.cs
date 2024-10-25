@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using STEMHub.STEMHub_Data.Data;
 
@@ -11,9 +12,10 @@ using STEMHub.STEMHub_Data.Data;
 namespace STEMHub.Migrations
 {
     [DbContext(typeof(STEMHubDbContext))]
-    partial class STEMHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241023092804_add_field_type_comment")]
+    partial class add_field_type_comment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -362,31 +364,6 @@ namespace STEMHub.Migrations
                     b.ToTable("Lesson");
                 });
 
-            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Like", b =>
-                {
-                    b.Property<Guid>("LikeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("LikedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("NewspaperArticleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("LikeId");
-
-                    b.HasIndex("NewspaperArticleId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Like");
-                });
-
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.NewspaperArticle", b =>
                 {
                     b.Property<Guid>("NewspaperArticleId")
@@ -639,25 +616,6 @@ namespace STEMHub.Migrations
                     b.Navigation("Topic");
                 });
 
-            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Like", b =>
-                {
-                    b.HasOne("STEMHub.STEMHub_Data.Entities.NewspaperArticle", "NewspaperArticle")
-                        .WithMany("Likes")
-                        .HasForeignKey("NewspaperArticleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("STEMHub.STEMHub_Data.Data.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("NewspaperArticle");
-                });
-
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.NewspaperArticle", b =>
                 {
                     b.HasOne("STEMHub.STEMHub_Data.Data.ApplicationUser", "ApplicationUser")
@@ -706,8 +664,6 @@ namespace STEMHub.Migrations
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.NewspaperArticle", b =>
                 {
                     b.Navigation("Comment");
-
-                    b.Navigation("Likes");
                 });
 
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.STEM", b =>
