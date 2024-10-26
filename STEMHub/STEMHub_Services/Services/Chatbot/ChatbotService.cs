@@ -52,5 +52,48 @@ namespace STEMHub.STEMHub_Services.Services.Chatbot
                 Found = true
             };
         }
+
+        public async Task<List<QuestionDto>> GetTopQuestionsAsync(int top, DateTime fromDate)
+        {
+            var questions = await _context.Questions
+           .Where(q => q.IsActive)
+           .Select(q => new QuestionDto
+           {
+               QuestionId = q.QuestionId,
+               Content = q.Content,
+               Answer = q.Answer,
+               CreatedDate = q.CreatedDate,
+               SearchCount = q.QuestionSearches.Count(qs => qs.SearchedDate >= fromDate)
+           })
+           .Where(q => q.SearchCount > 0)
+           .OrderByDescending(q => q.SearchCount)
+           .Take(top)
+           .ToListAsync();
+
+            return questions;
+        }
+
+        public async Task<QuestionDto> AddQuestionAsync(CreateQuestionDto questionDto)
+        {
+            var question = new Question
+            {
+                QuestionId = Guid.NewGuid(),
+                Content = questionDto.Content,
+                Answer = questionDto.Answer,
+                CreatedDate = DateTime.UtcNow,
+                IsActive = true
+            };
+
+            _context.Questions.Add(question);
+            await _context.SaveChangesAsync();
+
+            return new QuestionDto
+            {
+                QuestionId = question.QuestionId,
+                Content = question.Content,
+                Answer = question.Answer,
+                CreatedDate = question.CreatedDate
+            };
+        }
     }
 }
