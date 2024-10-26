@@ -18,6 +18,7 @@ using STEMHub.STEMHub_Services;
 using STEMHub.STEMHub_Services.Services;
 using STEMHub.STEMHub_Data.DTO;
 using Microsoft.AspNetCore.Http.Features;
+using STEMHub.STEMHub_Services.Services.Chatbot;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add database
@@ -106,6 +107,7 @@ builder.Services.AddScoped<ICrudRepository<ApplicationUser>, CrudRepository<Appl
 builder.Services.AddScoped<ICrudUserRepository<IdentityUser>, CrudUserRepository<IdentityUser>>();
 builder.Services.AddScoped<ICrudUserRepository<Ingredients>, CrudUserRepository<Ingredients>>();
 builder.Services.AddScoped<IGetAllCommentByLessonId, GetAllCommentByLessonId>();
+builder.Services.AddScoped<IChatbotService, ChatbotService>();
 builder.Services.AddScoped<UnitOfWork>();
 
 // Add services to the container.
