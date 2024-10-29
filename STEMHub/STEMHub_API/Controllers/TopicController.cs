@@ -7,6 +7,7 @@ using STEMHub.STEMHub_Data.Entities;
 using STEMHub.STEMHub_Services;
 using STEMHub.STEMHub_Services.Constants;
 using STEMHub.STEMHub_Services.Interfaces;
+using STEMHub.STEMHub_Services.Services.Service;
 using System.Text.Json;
 
 namespace STEMHub.STEMHub_API.Controllers
@@ -17,10 +18,13 @@ namespace STEMHub.STEMHub_API.Controllers
     {
         private readonly STEMHubDbContext _context;
         private readonly IPaginationService<TopicDto> _paginationService;
-        public TopicController(UnitOfWork unitOfWork, STEMHubDbContext context, IPaginationService<TopicDto> paginationService) : base(unitOfWork)
+        private readonly ISearchService _searchService;
+
+        public TopicController(UnitOfWork unitOfWork, STEMHubDbContext context, IPaginationService<TopicDto> paginationService, ISearchService searchService) : base(unitOfWork)
         {
             _context = context;
             _paginationService = paginationService;
+            _searchService = searchService;
         }
 
         [HttpGet]
@@ -95,7 +99,7 @@ namespace STEMHub.STEMHub_API.Controllers
 
                 return Ok(new { message = "Cập nhật thành công" });
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //if (_uniqueConstraintHandler.IsUniqueConstraintViolation(e))
                 //{
@@ -135,7 +139,7 @@ namespace STEMHub.STEMHub_API.Controllers
                 return StatusCode(StatusCodes.Status404NotFound,
                     new Response { Status = "Thất bại", Message = $"Không có Chủ đề chứa từ khoá {topicKey}" });
             }
-
+            await _searchService.UpdateSearchKeywordAsync(topicKey);
             return Ok(topics);
         }
 

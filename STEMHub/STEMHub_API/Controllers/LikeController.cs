@@ -60,5 +60,22 @@ namespace STEMHub.STEMHub_API.Controllers
             return Ok(new { count });
         }
 
+        [HttpGet("{articleId}/isLiked")]
+        public async Task<IActionResult> IsLiked(Guid articleId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var isLiked = (await _unitOfWork.LikeRepository.SearchAsync<Like>(l =>
+                l.NewspaperArticleId == articleId && l.UserId == userId)).Any();
+
+            return Ok(new { liked = isLiked });
+        }
+
+
     }
 }

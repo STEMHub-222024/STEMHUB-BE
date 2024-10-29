@@ -6,7 +6,7 @@ namespace STEMHub.STEMHub_Data.Entities
     {
         public Guid LessonId { get; set; }
         public string? LessonName { get; set; }
-
+        public string part { get; set; } // nguyên liệu - kết quả - 
         public ICollection<Comment> Comment { get; set; } = new List<Comment>();
         public Topic? Topic { get; set; }
         [ForeignKey("TopicId")]

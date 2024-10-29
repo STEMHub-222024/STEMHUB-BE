@@ -85,7 +85,7 @@ namespace STEMHub.STEMHub_API.Controllers
 
                 return Ok(new { message = "Cập nhật thành công" });
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //if (_uniqueConstraintHandler.IsUniqueConstraintViolation(e))
                 //{

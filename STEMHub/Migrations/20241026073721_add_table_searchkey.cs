@@ -4,7 +4,7 @@
 
 namespace STEMHub.Migrations
 {
-    public partial class add_enum_comment : Migration
+    public partial class add_table_searchkey : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

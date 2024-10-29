@@ -12,8 +12,8 @@ using STEMHub.STEMHub_Data.Data;
 namespace STEMHub.Migrations
 {
     [DbContext(typeof(STEMHubDbContext))]
-    [Migration("20241025082903_add_enum_comment")]
-    partial class add_enum_comment
+    [Migration("20241026134059_add_table_search")]
+    partial class add_table_search
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -446,6 +446,21 @@ namespace STEMHub.Migrations
                     b.ToTable("Owner");
                 });
 
+            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Parts", b =>
+                {
+                    b.Property<Guid>("PartId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PartName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PartId");
+
+                    b.ToTable("Parts");
+                });
+
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Scientist", b =>
                 {
                     b.Property<Guid>("ScientistId")
@@ -473,6 +488,24 @@ namespace STEMHub.Migrations
                     b.HasKey("ScientistId");
 
                     b.ToTable("Scientist");
+                });
+
+            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Search", b =>
+                {
+                    b.Property<Guid>("SearchId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SearchCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SearchKeyword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SearchId");
+
+                    b.ToTable("Search");
                 });
 
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.STEM", b =>

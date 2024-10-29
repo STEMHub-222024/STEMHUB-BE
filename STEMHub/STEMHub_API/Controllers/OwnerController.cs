@@ -91,7 +91,7 @@ namespace STEMHub.STEMHub_API.Controllers
                     return CreatedAtAction(nameof(GetOwner), new { id = ownerDto!.Id }, ownerDto);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal Server Error");
             }

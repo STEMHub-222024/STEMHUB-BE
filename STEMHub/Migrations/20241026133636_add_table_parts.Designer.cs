@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using STEMHub.STEMHub_Data.Data;
 
@@ -11,9 +12,10 @@ using STEMHub.STEMHub_Data.Data;
 namespace STEMHub.Migrations
 {
     [DbContext(typeof(STEMHubDbContext))]
-    partial class STEMHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241026133636_add_table_parts")]
+    partial class add_table_parts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -488,22 +490,22 @@ namespace STEMHub.Migrations
                     b.ToTable("Scientist");
                 });
 
-            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Search", b =>
+            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.SearchKeywords", b =>
                 {
-                    b.Property<Guid>("SearchId")
+                    b.Property<Guid>("SearchKeywordsId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Keyword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SearchCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("SearchKeyword")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("SearchKeywordsId");
 
-                    b.HasKey("SearchId");
-
-                    b.ToTable("Search");
+                    b.ToTable("SearchKeywords");
                 });
 
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.STEM", b =>

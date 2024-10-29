@@ -27,6 +27,7 @@ namespace STEMHub.STEMHub_Services
         public IGetAllCommentByLessonId GetAllCommentByLessonId { get; set; }
         public ICrudRepository<Like> LikeRepository { get; set; }
         public CommentRepository CCommentRepository { get; set; }
+        public ISearchKeywordRepository SearchKeywordRepository { get; set; }
 
         public UnitOfWork(STEMHubDbContext context, IMapper mapper)
         {
@@ -52,6 +53,7 @@ namespace STEMHub.STEMHub_Services
             GetAllCommentByLessonId = new GetAllCommentByLessonId(_context);
             LikeRepository = new CrudRepository<Like>(_context, mapper);
             CCommentRepository = new CommentRepository(_context, mapper);
+            SearchKeywordRepository =  new SearchKeywordRepository(_context, mapper);
         }
 
         public void Commit()
