@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using STEMHub.STEMHub_Data.Data;
 
@@ -11,9 +12,10 @@ using STEMHub.STEMHub_Data.Data;
 namespace STEMHub.Migrations
 {
     [DbContext(typeof(STEMHubDbContext))]
-    partial class STEMHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241026134059_add_table_search")]
+    partial class add_table_search
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -444,50 +446,6 @@ namespace STEMHub.Migrations
                     b.ToTable("Owner");
                 });
 
-            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Question", b =>
-                {
-                    b.Property<Guid>("QuestionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Answer")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.HasKey("QuestionId");
-
-                    b.ToTable("Questions");
-                });
-
-            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.QuestionSearch", b =>
-                {
-                    b.Property<Guid>("QuestionSearchId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("QuestionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("SearchedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("QuestionSearchId");
-
-                    b.HasIndex("QuestionId");
-
-                    b.ToTable("QuestionSearches");
-                });
-
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Parts", b =>
                 {
                     b.Property<Guid>("PartId")
@@ -744,17 +702,6 @@ namespace STEMHub.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
-            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.QuestionSearch", b =>
-                {
-                    b.HasOne("STEMHub.STEMHub_Data.Entities.Question", "Question")
-                        .WithMany("QuestionSearches")
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Question");
-                });
-
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Topic", b =>
                 {
                     b.HasOne("STEMHub.STEMHub_Data.Entities.STEM", "STEM")
@@ -789,6 +736,13 @@ namespace STEMHub.Migrations
                     b.Navigation("Comment");
 
                     b.Navigation("Videos");
+                });
+
+            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.NewspaperArticle", b =>
+                {
+                    b.Navigation("Comment");
+
+                    b.Navigation("Likes");
                 });
 
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.STEM", b =>

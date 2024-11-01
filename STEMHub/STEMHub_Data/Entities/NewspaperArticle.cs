@@ -17,8 +17,10 @@ namespace STEMHub.STEMHub_Data.Entities
         public string? HtmlContent { get; set; }
         public DateTime create_at { get; set; } = DateTime.Now;
 
+        public ICollection<Comment> Comment { get; set; } = new List<Comment>();
         public string? UserId { get; set; }
         [ForeignKey("UserId")]
         public virtual ApplicationUser ApplicationUser { get; set; }
+        public ICollection<Like> Likes { get; set; } = new List<Like>();
     }
 }
