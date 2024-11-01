@@ -791,6 +791,12 @@ namespace STEMHub.Migrations
                     b.Navigation("Videos");
                 });
 
+              modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.NewspaperArticle", b =>
+                  {
+                      b.Navigation("Comment");
+                      b.Navigation("Likes");
+                  });
+
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.STEM", b =>
                 {
                     b.Navigation("Topic");
