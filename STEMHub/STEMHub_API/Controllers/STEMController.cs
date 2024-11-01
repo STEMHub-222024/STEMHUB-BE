@@ -55,7 +55,7 @@ namespace STEMHub.STEMHub_API.Controllers
                     return CreatedAtAction(nameof(GetSTEM), new { id = stemDto!.STEMId }, stemDto);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal Server Error");
             }

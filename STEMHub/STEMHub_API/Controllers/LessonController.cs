@@ -4,6 +4,8 @@ using STEMHub.STEMHub_Data.Entities;
 using STEMHub.STEMHub_Services.Constants;
 using STEMHub.STEMHub_Services;
 using STEMHub.STEMHub_Data.DTO;
+using STEMHub.STEMHub_Services.Services.Service;
+using STEMHub.STEMHub_Services.Interfaces;
 
 namespace STEMHub.STEMHub_API.Controllers
 {
@@ -11,9 +13,10 @@ namespace STEMHub.STEMHub_API.Controllers
     [ApiController]
     public class LessonController : BaseController
     {
+        
         public LessonController(UnitOfWork unitOfWork) : base(unitOfWork)
         {
-
+            
         }
 
         [HttpGet]
@@ -85,7 +88,7 @@ namespace STEMHub.STEMHub_API.Controllers
 
                 return Ok(new { message = "Cập nhật thành công" });
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //if (_uniqueConstraintHandler.IsUniqueConstraintViolation(e))
                 //{
@@ -125,7 +128,6 @@ namespace STEMHub.STEMHub_API.Controllers
                 return StatusCode(StatusCodes.Status404NotFound,
                     new Response { Status = "Thất bại", Message = $"Không có Bài Học chứa từ khoá {lessonKey}" });
             }
-
             return Ok(lessons);
         }
     }

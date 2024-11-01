@@ -9,6 +9,7 @@ using STEMHub.STEMHub_Data.Data;
 using STEMHub.STEMHub_Services.Interfaces;
 using STEMHub.STEMHub_Services.Services;
 using STEMHub.STEMHub_Data.DTO;
+using STEMHub.STEMHub_Services.Services.Service;
 
 namespace STEMHub.STEMHub_API.Controllers
 {
@@ -19,11 +20,13 @@ namespace STEMHub.STEMHub_API.Controllers
 
         private readonly STEMHubDbContext _context;
         private readonly IPaginationService<NewspaperArticleDto> _paginationService;
+        private readonly ISearchService _searchService;
 
-        public NewspaperArticleController(UnitOfWork unitOfWork, STEMHubDbContext context, IPaginationService<NewspaperArticleDto> paginationService) : base(unitOfWork)
+        public NewspaperArticleController(UnitOfWork unitOfWork, STEMHubDbContext context, IPaginationService<NewspaperArticleDto> paginationService, ISearchService searchService) : base(unitOfWork)
         {
             _context = context;
             _paginationService = paginationService;
+            _searchService = searchService;
         }
 
         [HttpGet]
@@ -65,7 +68,7 @@ namespace STEMHub.STEMHub_API.Controllers
                     return CreatedAtAction(nameof(GetNewspaperArticle), new { id = newspaperArticleDto!.NewspaperArticleId }, newspaperArticleDto);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal Server Error");
             }
@@ -138,7 +141,7 @@ namespace STEMHub.STEMHub_API.Controllers
                 return StatusCode(StatusCodes.Status404NotFound,
                     new Response { Status = "Thất bại", Message = $"Không có Chủ đề bài viết chứa từ khoá {newspaperArticleKey}" });
             }
-
+            await _searchService.UpdateSearchKeywordAsync(newspaperArticleKey);
             return Ok(newspaperArticles);
         }
 

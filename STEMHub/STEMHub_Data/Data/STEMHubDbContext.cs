@@ -16,6 +16,12 @@ namespace STEMHub.STEMHub_Data.Data
         {
             base.OnModelCreating(builder);
             SeedRoles(builder);
+            builder.Entity<Comment>()
+                .Property(c => c.Type)
+                .HasConversion(
+                    v => v.ToString(), // Chuyển enum thành chuỗi
+                    v => (CommentType)Enum.Parse(typeof(CommentType), v) // Chuyển chuỗi thành enum
+                );
         }
 
 
@@ -30,6 +36,9 @@ namespace STEMHub.STEMHub_Data.Data
         public DbSet<Scientist> Scientist { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<QuestionSearch> QuestionSearches { get; set; }
+        public DbSet<Like> Like { get; set; }
+        public DbSet<Parts> Parts { get; set; }
+        public DbSet<Search> Search { get; set; }
 
         private static void SeedRoles(ModelBuilder builder)
         {

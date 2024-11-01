@@ -20,6 +20,8 @@ namespace STEMHub.STEMHub_Services.Mapper
             CreateMap<Scientist, ScientistDto>().ReverseMap();
             CreateMap<Ingredients, IngredientsDto>().ReverseMap();
             CreateMap<ApplicationUser, UserDto>().ReverseMap();
+            CreateMap<Like, LikeDto>().ReverseMap();
+            CreateMap<Search, SearchKeywordsDto>();
         }
     }
 }

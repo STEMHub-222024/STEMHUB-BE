@@ -30,7 +30,7 @@ namespace STEMHub.STEMHub_API.Controllers
 
             if (comments == null || !comments.Any())
             {
-                return NotFound("Không tìm thấy bình luận nào cho bài học này.");
+                return NotFound("Không tìm thấy bình luận.");
             }
             return Ok(comments);
         }
@@ -67,7 +67,7 @@ namespace STEMHub.STEMHub_API.Controllers
                     return CreatedAtAction(nameof(GetComment), new { id = commentDto!.CommentId }, commentDto);
                 }
             }
-            catch (Exception e)
+            catch (Exception) 
             {
                 return StatusCode(500, "Internal Server Error");
             }
@@ -132,5 +132,18 @@ namespace STEMHub.STEMHub_API.Controllers
 
             return Ok(new { message = "Xóa thành công" });
         }
+
+        [HttpGet("filter")]
+        public async Task<IActionResult> GetCommentsByTypeAndId(CommentType type, Guid? lessonId = null, Guid? articleId = null)
+        {
+            var comments = await _unitOfWork.GetCommentsByTypeAndIdAsync(type, lessonId, articleId);
+
+            if (comments == null || !comments.Any())
+            {
+                return NotFound("Không tìm thấy bình luận cho loại yêu cầu.");
+            }
+            return Ok(comments);
+        }
+
     }
 }

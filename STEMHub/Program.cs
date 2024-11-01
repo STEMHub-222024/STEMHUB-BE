@@ -18,6 +18,7 @@ using STEMHub.STEMHub_Services;
 using STEMHub.STEMHub_Services.Services;
 using STEMHub.STEMHub_Data.DTO;
 using Microsoft.AspNetCore.Http.Features;
+using STEMHub.STEMHub_Services.Services.Service;
 using STEMHub.STEMHub_Services.Services.Chatbot;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -88,6 +89,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserManagement, UserManagement>();
 builder.Services.AddScoped<IPaginationService<TopicDto>, PaginationService<TopicDto>>();
 builder.Services.AddScoped<IPaginationService<NewspaperArticleDto>, PaginationService<NewspaperArticleDto>>();
+builder.Services.AddScoped<ISearchService, SearchService>();
 
 // Add services Mapper
 builder.Services.AddAutoMapper(typeof(Program));
@@ -108,6 +110,8 @@ builder.Services.AddScoped<ICrudUserRepository<IdentityUser>, CrudUserRepository
 builder.Services.AddScoped<ICrudUserRepository<Ingredients>, CrudUserRepository<Ingredients>>();
 builder.Services.AddScoped<IGetAllCommentByLessonId, GetAllCommentByLessonId>();
 builder.Services.AddScoped<IChatbotService, ChatbotService>();
+builder.Services.AddScoped<ICrudRepository<Like>, CrudRepository<Like>>();
+builder.Services.AddScoped<ISearchKeywordRepository, SearchKeywordRepository>();
 builder.Services.AddScoped<UnitOfWork>();
 
 // Add services to the container.
