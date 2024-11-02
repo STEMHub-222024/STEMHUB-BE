@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using STEMHub.STEMHub_Data.Data;
 
@@ -11,9 +12,10 @@ using STEMHub.STEMHub_Data.Data;
 namespace STEMHub.Migrations
 {
     [DbContext(typeof(STEMHubDbContext))]
-    partial class STEMHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241026022621_create_question_table")]
+    partial class create_question_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -296,18 +298,11 @@ namespace STEMHub.Migrations
                     b.Property<string>("Content_C")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("LessonId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("NewspaperArticleId")
+                    b.Property<Guid>("LessonId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Rate")
                         .HasColumnType("int");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -316,8 +311,6 @@ namespace STEMHub.Migrations
                     b.HasKey("CommentId");
 
                     b.HasIndex("LessonId");
-
-                    b.HasIndex("NewspaperArticleId");
 
                     b.HasIndex("UserId");
 
@@ -360,31 +353,6 @@ namespace STEMHub.Migrations
                     b.HasIndex("TopicId");
 
                     b.ToTable("Lesson");
-                });
-
-            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Like", b =>
-                {
-                    b.Property<Guid>("LikeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("LikedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("NewspaperArticleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("LikeId");
-
-                    b.HasIndex("NewspaperArticleId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Like");
                 });
 
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.NewspaperArticle", b =>
@@ -488,21 +456,6 @@ namespace STEMHub.Migrations
                     b.ToTable("QuestionSearches");
                 });
 
-            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Parts", b =>
-                {
-                    b.Property<Guid>("PartId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("PartName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("PartId");
-
-                    b.ToTable("Parts");
-                });
-
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Scientist", b =>
                 {
                     b.Property<Guid>("ScientistId")
@@ -530,24 +483,6 @@ namespace STEMHub.Migrations
                     b.HasKey("ScientistId");
 
                     b.ToTable("Scientist");
-                });
-
-            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Search", b =>
-                {
-                    b.Property<Guid>("SearchId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("SearchCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SearchKeyword")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("SearchId");
-
-                    b.ToTable("Search");
                 });
 
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.STEM", b =>
@@ -675,11 +610,9 @@ namespace STEMHub.Migrations
                 {
                     b.HasOne("STEMHub.STEMHub_Data.Entities.Lesson", "Lesson")
                         .WithMany("Comment")
-                        .HasForeignKey("LessonId");
-
-                    b.HasOne("STEMHub.STEMHub_Data.Entities.NewspaperArticle", "NewspaperArticle")
-                        .WithMany("Comment")
-                        .HasForeignKey("NewspaperArticleId");
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("STEMHub.STEMHub_Data.Data.ApplicationUser", "ApplicationUser")
                         .WithMany("Comments")
@@ -690,8 +623,6 @@ namespace STEMHub.Migrations
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Lesson");
-
-                    b.Navigation("NewspaperArticle");
                 });
 
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Ingredients", b =>
@@ -714,25 +645,6 @@ namespace STEMHub.Migrations
                         .IsRequired();
 
                     b.Navigation("Topic");
-                });
-
-            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Like", b =>
-                {
-                    b.HasOne("STEMHub.STEMHub_Data.Entities.NewspaperArticle", "NewspaperArticle")
-                        .WithMany("Likes")
-                        .HasForeignKey("NewspaperArticleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("STEMHub.STEMHub_Data.Data.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("NewspaperArticle");
                 });
 
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.NewspaperArticle", b =>
@@ -791,11 +703,10 @@ namespace STEMHub.Migrations
                     b.Navigation("Videos");
                 });
 
-              modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.NewspaperArticle", b =>
-                  {
-                      b.Navigation("Comment");
-                      b.Navigation("Likes");
-                  });
+            modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Question", b =>
+                {
+                    b.Navigation("QuestionSearches");
+                });
 
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.STEM", b =>
                 {

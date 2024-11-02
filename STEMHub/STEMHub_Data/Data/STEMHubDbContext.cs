@@ -34,6 +34,8 @@ namespace STEMHub.STEMHub_Data.Data
         public DbSet<Video> Video { get; set; }
         public DbSet<Owner> Owner { get; set; }
         public DbSet<Scientist> Scientist { get; set; }
+        public DbSet<Question> Questions { get; set; }
+        public DbSet<QuestionSearch> QuestionSearches { get; set; }
         public DbSet<Like> Like { get; set; }
         public DbSet<Parts> Parts { get; set; }
         public DbSet<Search> Search { get; set; }
