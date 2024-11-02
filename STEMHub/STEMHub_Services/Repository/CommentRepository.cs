@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using STEMHub.STEMHub_Data.Data;
 using STEMHub.STEMHub_Data.Entities;
+using System.Linq.Expressions;
 
 namespace STEMHub.STEMHub_Services.Repository
 {
@@ -13,10 +14,8 @@ namespace STEMHub.STEMHub_Services.Repository
         {
             var query = _context.Set<Comment>().AsQueryable();
 
-            // Lọc theo loại
             query = query.Where(c => c.Type == type);
 
-            // Lọc theo lessonId nếu type là Lesson
             if (type == CommentType.Lesson)
             {
                 if (lessonId.HasValue)
@@ -25,11 +24,9 @@ namespace STEMHub.STEMHub_Services.Repository
                 }
                 else
                 {
-                    // Nếu không có lessonId, trả về không có kết quả
                     return Enumerable.Empty<TDto>();
                 }
             }
-            // Lọc theo articleId nếu type là Newspaper
             else if (type == CommentType.Newspaper)
             {
                 if (articleId.HasValue)
@@ -38,14 +35,16 @@ namespace STEMHub.STEMHub_Services.Repository
                 }
                 else
                 {
-                    // Nếu không có articleId, trả về không có kết quả
                     return Enumerable.Empty<TDto>();
                 }
             }
-
-            // Thực hiện truy vấn và chuyển đổi kết quả thành DTO
             var entities = await query.ToListAsync();
             return entities.Select(entity => MapToDto<TDto>(entity));
+        }
+
+        public async Task<int> CountAsync(Expression<Func<Comment, bool>> predicate)
+        {
+            return await _context.Comment.CountAsync(predicate);
         }
 
     }

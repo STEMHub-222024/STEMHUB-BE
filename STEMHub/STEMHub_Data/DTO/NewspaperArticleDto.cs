@@ -12,6 +12,7 @@ namespace STEMHub.STEMHub_Data.DTO
         public string? Image { get; set; }
         public string? Description_NA { get; set; }
         public string? Markdown { get; set; }
+        public int View { get; set; }
 
         [DataType(DataType.MultilineText)]
         public string? HtmlContent { get; set; }

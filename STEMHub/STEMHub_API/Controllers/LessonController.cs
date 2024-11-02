@@ -90,15 +90,7 @@ namespace STEMHub.STEMHub_API.Controllers
             }
             catch (Exception)
             {
-                //if (_uniqueConstraintHandler.IsUniqueConstraintViolation(e))
-                //{
-                //    Log.Error(e, "Vi phạm trùng lặp!");
-                //    return BadRequest(new { ErrorMessage = "Vi phạm trùng lặp!", ErrorCode = "DUPLICATE_KEY" });
-                //}
-                //else
-                //{
                 return StatusCode(500, "Internal Server Error");
-                //}
             }
 
         }

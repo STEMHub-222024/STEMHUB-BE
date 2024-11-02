@@ -10,6 +10,7 @@ using STEMHub.STEMHub_Services.Interfaces;
 using STEMHub.STEMHub_Services.Services;
 using STEMHub.STEMHub_Data.DTO;
 using STEMHub.STEMHub_Services.Services.Service;
+using System.Security.Claims;
 
 namespace STEMHub.STEMHub_API.Controllers
 {
@@ -32,20 +33,61 @@ namespace STEMHub.STEMHub_API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllNewspaperArticle()
         {
-            var newspaperArticle = await _unitOfWork.NewspaperArticleRepository.GetAllAsync<NewspaperArticleDto>();
-            return Ok(newspaperArticle);
+            try
+            {
+                var newspaperArticles = await _unitOfWork.NewspaperArticleRepository.GetAllAsync<NewspaperArticleDto>();
+
+                var articlesWithComments = new List<object>();
+
+                foreach (var article in newspaperArticles)
+                {
+                    var totalComments = await _unitOfWork.CommentRepository.CountAsync(c => c.NewspaperArticleId == article.NewspaperArticleId);
+                    var totalLikes = await _unitOfWork.LikeRepository.CountAsync(l => l.NewspaperArticleId == article.NewspaperArticleId);
+                    articlesWithComments.Add(new
+                    {
+                        Article = article,
+                        TotalComments = totalComments,
+                        TotalLikes = totalLikes
+                    });
+                }
+
+                return Ok(articlesWithComments);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error");
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetNewspaperArticle(Guid id)
         {
-            var newspaperArticle =await _unitOfWork.NewspaperArticleRepository.GetByIdAsync<NewspaperArticleDto>(id);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            var newspaperArticle =await _unitOfWork.NewspaperArticleRepository.GetByIdAsync<NewspaperArticleDto>(id);
+            var view = await _unitOfWork.NewspaperArticleRepository.GetByIdAsync<NewspaperArticle>(id);
             if (newspaperArticle == null)
                 return StatusCode(StatusCodes.Status404NotFound,
                     new Response { Status = "Thất bại", Message = "ID không tồn tại. Vui lòng kiểm tra lại" });
 
-            return Ok(newspaperArticle);
+            var totalLikes = await _unitOfWork.LikeRepository.CountAsync(l => l.NewspaperArticleId == id);
+            var totalComments = await _unitOfWork.CommentRepository.CountAsync(c => c.NewspaperArticleId == id);
+            bool isLiked = false;
+            if (userId != null)
+            {
+                isLiked = (await _unitOfWork.LikeRepository.SearchAsync<Like>(l =>
+                    l.NewspaperArticleId == id && l.UserId == userId)).Any();
+            }
+
+            view.View++;
+            await _unitOfWork.CommitAsync();
+            return Ok(new
+            {
+                Article = newspaperArticle,
+                TotalLikes = totalLikes,
+                Liked = isLiked,
+                TotalComments = totalComments
+            });
         }
 
         [HttpPost]
@@ -103,15 +145,7 @@ namespace STEMHub.STEMHub_API.Controllers
             }
             catch (Exception e)
             {
-                //if (_uniqueConstraintHandler.IsUniqueConstraintViolation(e))
-                //{
-                //    Log.Error(e, "Vi phạm trùng lặp!");
-                //    return BadRequest(new { ErrorMessage = "Vi phạm trùng lặp!", ErrorCode = "DUPLICATE_KEY" });
-                //}
-                //else
-                //{
                 return StatusCode(500, "Internal Server Error");
-                //}
             }
 
         }

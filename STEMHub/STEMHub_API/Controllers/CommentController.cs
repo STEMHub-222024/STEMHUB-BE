@@ -95,17 +95,9 @@ namespace STEMHub.STEMHub_API.Controllers
 
                 return Ok(new { message = "Cập nhật thành công" });
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                //if (_uniqueConstraintHandler.IsUniqueConstraintViolation(e))
-                //{
-                //    Log.Error(e, "Vi phạm trùng lặp!");
-                //    return BadRequest(new { ErrorMessage = "Vi phạm trùng lặp!", ErrorCode = "DUPLICATE_KEY" });
-                //}
-                //else
-                //{
                 return StatusCode(500, "Internal Server Error");
-                //}
             }
 
         }
@@ -134,7 +126,7 @@ namespace STEMHub.STEMHub_API.Controllers
         }
 
         [HttpGet("filter")]
-        public async Task<IActionResult> GetCommentsByTypeAndId(CommentType type, Guid? lessonId = null, Guid? articleId = null)
+        public async Task<IActionResult> GetCommentsByTypeAndId(CommentType type = CommentType.Newspaper, Guid? lessonId = null, Guid? articleId = null)
         {
             var comments = await _unitOfWork.GetCommentsByTypeAndIdAsync(type, lessonId, articleId);
 

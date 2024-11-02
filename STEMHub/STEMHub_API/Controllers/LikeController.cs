@@ -22,7 +22,7 @@ namespace STEMHub.STEMHub_API.Controllers
 
             if (userId == null)
             {
-                return Unauthorized();
+                return Ok(new {message = "Chưa đăng nhập! Vui lòng đăng nhập."});
             }
 
             // Kiểm tra nếu đã like
@@ -67,7 +67,7 @@ namespace STEMHub.STEMHub_API.Controllers
 
             if (userId == null)
             {
-                return Unauthorized();
+                return Ok(new { message = "Chưa đăng nhập! Vui lòng đăng nhập." });
             }
 
             var isLiked = (await _unitOfWork.LikeRepository.SearchAsync<Like>(l =>
