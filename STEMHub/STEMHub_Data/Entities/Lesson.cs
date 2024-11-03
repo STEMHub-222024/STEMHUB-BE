@@ -8,9 +8,10 @@ namespace STEMHub.STEMHub_Data.Entities
         public string? LessonName { get; set; }
         public ICollection<Comment> Comment { get; set; } = new List<Comment>();
         public Topic? Topic { get; set; }
-        [ForeignKey("TopicId")]
-        public Guid TopicId { get; set; }
+        [ForeignKey("TopicId")] public Guid TopicId { get; set; }
 
         public ICollection<Video> Videos { get; set; } = new List<Video>();
+
+        public Parts Parts { get; set; }
     }
 }

@@ -15,7 +15,7 @@ namespace STEMHub.STEMHub_Services
         public ICrudRepository<Banner> BannerRepository { get; set; } = null!;
         public ICrudRepository<Ingredients> IngredientsRepository { get; set; } = null!;
         public ICrudRepository<Comment> CommentRepository { get; set; } = null!;
-        public ICrudRepository<Lesson> LessonRepository { get; set; } = null!;
+        public ILessonRepository LessonRepository { get; set; } = null!;
         public ICrudRepository<NewspaperArticle> NewspaperArticleRepository { get; set; } = null!;
         public ICrudRepository<STEM> STEMRepository { get; set; } = null!;
         public ICrudRepository<Topic> TopicRepository { get; set; } = null!;
@@ -27,6 +27,7 @@ namespace STEMHub.STEMHub_Services
         public IGetAllCommentByLessonId GetAllCommentByLessonId { get; set; }
         public ICrudRepository<Like> LikeRepository { get; set; }
         public CommentRepository CCommentRepository { get; set; }
+        public ICrudRepository<Parts> PartsRepository { get; set; }
         public ISearchKeywordRepository SearchKeywordRepository { get; set; }
 
         public UnitOfWork(STEMHubDbContext context, IMapper mapper)
@@ -40,7 +41,7 @@ namespace STEMHub.STEMHub_Services
         {
             BannerRepository = new CrudRepository<Banner>(_context, mapper);
             CommentRepository = new CrudRepository<Comment>(_context, mapper);
-            LessonRepository = new CrudRepository<Lesson>(_context, mapper);
+            LessonRepository = new LessonRepository(_context, mapper);
             NewspaperArticleRepository = new CrudRepository<NewspaperArticle>(_context, mapper);
             STEMRepository = new CrudRepository<STEM>(_context, mapper);
             TopicRepository = new CrudRepository<Topic>(_context, mapper);
@@ -54,6 +55,7 @@ namespace STEMHub.STEMHub_Services
             LikeRepository = new CrudRepository<Like>(_context, mapper);
             CCommentRepository = new CommentRepository(_context, mapper);
             SearchKeywordRepository =  new SearchKeywordRepository(_context, mapper);
+            PartsRepository = new CrudRepository<Parts>(_context, mapper);
         }
 
         public void Commit()

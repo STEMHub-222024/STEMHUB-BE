@@ -29,7 +29,7 @@ namespace STEMHub.STEMHub_API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetLesson(Guid id)
         {
-            var lesson = await _unitOfWork.LessonRepository.GetByIdAsync<LessonDto>(id);
+            var lesson = await _unitOfWork.LessonRepository.GetLessonWithPartsAsync(id);
 
             if (lesson == null)
                 return StatusCode(StatusCodes.Status404NotFound,

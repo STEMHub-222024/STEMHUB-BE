@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using STEMHub.STEMHub_Data.Data;
 
@@ -11,9 +12,10 @@ using STEMHub.STEMHub_Data.Data;
 namespace STEMHub.Migrations
 {
     [DbContext(typeof(STEMHubDbContext))]
-    partial class STEMHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241103032129_add_field_table_part")]
+    partial class add_field_table_part
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -541,9 +543,6 @@ namespace STEMHub.Migrations
                     b.Property<string>("Adage")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AdageVN")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
@@ -779,7 +778,7 @@ namespace STEMHub.Migrations
             modelBuilder.Entity("STEMHub.STEMHub_Data.Entities.Parts", b =>
                 {
                     b.HasOne("STEMHub.STEMHub_Data.Entities.Lesson", "Lesson")
-                        .WithOne("Parts")
+                        .WithOne("Part")
                         .HasForeignKey("STEMHub.STEMHub_Data.Entities.Parts", "LessonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -831,7 +830,7 @@ namespace STEMHub.Migrations
                 {
                     b.Navigation("Comment");
 
-                    b.Navigation("Parts")
+                    b.Navigation("Part")
                         .IsRequired();
 
                     b.Navigation("Videos");

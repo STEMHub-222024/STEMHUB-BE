@@ -25,13 +25,11 @@ namespace STEMHub.STEMHub_API.Controllers
                 return Ok(new {message = "Chưa đăng nhập! Vui lòng đăng nhập."});
             }
 
-            // Kiểm tra nếu đã like
             var like = (await _unitOfWork.LikeRepository.SearchAsync<Like>(l =>
                 l.NewspaperArticleId == articleId && l.UserId == userId)).FirstOrDefault();
 
             if (like == null)
             {
-                // Nếu chưa like thì thêm like mới
                 like = new Like
                 {
                     NewspaperArticleId = articleId,
@@ -40,24 +38,23 @@ namespace STEMHub.STEMHub_API.Controllers
 
                 await _unitOfWork.LikeRepository.AddAsync(like);
                 await _unitOfWork.CommitAsync();
-
-                return Ok(new { message = "Article liked successfully!", liked = true });
+                var count = await GetTotalLikes(articleId);
+                return Ok(new { message = "Article liked successfully!", liked = true, totalLikes = count });
             }
             else
             {
-                // Nếu đã like thì xóa
                 await _unitOfWork.LikeRepository.DeleteAsync(like.LikeId);
                 await _unitOfWork.CommitAsync();
-
-                return Ok(new { message = "Article unliked successfully!", liked = false });
+                var count = await GetTotalLikes(articleId);
+                return Ok(new { message = "Article unliked successfully!", liked = false , totalLikes = count });
             }
         }
 
         [HttpGet("{articleId}/totalLikes")]
-        public async Task<IActionResult> GetTotalLikes(Guid articleId)
+        public async Task<int> GetTotalLikes(Guid articleId)
         {
             var count = await _unitOfWork.LikeRepository.CountAsync(l => l.NewspaperArticleId == articleId);
-            return Ok(new { count });
+            return count;
         }
 
         [HttpGet("{articleId}/isLiked")]
@@ -75,7 +72,5 @@ namespace STEMHub.STEMHub_API.Controllers
 
             return Ok(new { liked = isLiked });
         }
-
-
     }
 }
